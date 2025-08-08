@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TMS - Manage Trainer's account</title>
+	<link rel="stylesheet" href="file:///C:Users\r.santos\Documents\TMS\style\trainingManagement.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+	<script src="file:///C:Users\r.santos\Documents\TMS\script\trainingScript.js"></script>
+	<link rel="icon" href="file:///C:Users\r.santos\Documents\TMS\/images/favicon.png" type="image/png">
+</head>
+<body>
+
+<header>
+    <div class="container">
+        <h1>Training Management System</h1>
+    </div>
+    <!-- Header Menu (Home icon and Burger menu on the same line) -->
+    <div class="header-menu">
+        <!-- Home Icon Button -->
+	<a href="file:///C:\Users\r.santos\Documents\TMS\home-page.html">
+		<button class="home-button">
+			<i class="fas fa-home"></i> <!-- Font Awesome Home Icon -->
+		</button>
+	</a>
+        <!-- Burger Menu -->
+        <div class="burger-menu">
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+    </div>
+</header>
+	 <!-- Hidden Menu Content -->
+		<div class="burger-menu-content">
+			<h3>Training Materials</h3>
+			<ul class="sub-menu">
+				<li><a href="file:///C:\Users\r.santos\Documents\TMS\materials.html">Material</a></li>
+				<li><a href="file:///C:\Users\r.santos\Documents\TMS\certification.html">Certifications</a></li>
+				<li><a href="file:///C:\Users\r.santos\Documents\TMS\evaluation-questionnaire.html">Evaluation questionnaire</a></li>
+				<li><a href="file:///C:\Users\r.santos\Documents\TMS\dailyTrainingReport.html">Daily Training Report</a></li>				
+			</ul>
+			
+			<h3>Training Preparation</h3>
+			<ul class="sub-menu">
+				<li><a href="file:///C:\Users\r.santos\Documents\TMS\training-slots.html">Create Training Slots</a></li>
+				<li><a href="file:///C:\Users\r.santos\Documents\TMS\tlSlots.html">Assign to Training</a></li>
+				<li><a href="file:///C:\Users\r.santos\Documents\TMS\training-plan.html">Training Plan</a></li>
+				<li><a href="file:///C:\Users\r.santos\Documents\TMS\schedule.html">Schedule</a></li>				
+			</ul>
+			
+			<h3>Accounts</h3>
+			<ul class="sub-menu">
+				<li><a href="file:///C:\Users\r.santos\Documents\TMS\manage-trainers.html">Manage Trainer's account</a></li>
+				<li><a href="file:///C:\Users\r.santos\Documents\TMS\agents.html">Manage Agents</a></li>				
+			</ul>
+			<button class="logout" onclick="logout()">Logout</Button>
+		</div>
+<div class="site-content">
+    <main>
+		<h3 class="page-name">Manage Trainers' Account</h3>	
+		<div class="training-slots">
+		<div id="import-users">
+			<table id="user-table" class="user-table">
+				<thead>
+					<tr>
+						<th>Name</th>
+						<th>Email</th>
+						<th>Department</th>
+						<th>Position</th>
+				<th style="display: none;">Password</th>
+					</tr>
+				</thead>
+				<tbody>
+					<!-- Example row with input fields for editing -->
+					<tr>
+						<td><input type="text" id="user-name" placeholder="John Doe" /></td>
+						<td><input type="email" id="user-email" placeholder="johndoe@example.com" /></td>
+						<td>
+							<select id="user-department">
+								<option value="Sales" selected disabled hidden>Select</option>
+								<option value="Training Team">Training Team</option>
+							</select>
+						</td>
+						<td>
+							<select id="user-position">
+								<option value="Manager" selected disabled hidden>Select</option>
+								 <option value="Maneger">Maneger</option>
+							   <option value="Team Leader">Team Leader</option>
+								<option value="Trainer">Trainer</option>
+							</select>
+						</td>
+					</tr>
+				</tbody>
+				<tfoot>
+					<tr>
+						<td colspan="5" style="text-align: center;">
+							<button id="add-user-button" class="add-button">Add Trainer</button>
+						</td>
+					</tr>
+				</tfoot>
+			</table>
+		</div>
+		</div>
+<!-- Import Excel Form -->
+<div class="middle-wrapper-excel">
+    <div class="import-excel-container">
+        <h2><i class="fas fa-file-excel"></i> Import Agents from Excel</h2>
+        <form id="importExcelForm">
+            <div class="form-group">
+                <label for="excelFile"><i class="fas fa-upload"></i> Choose Excel File:</label>
+                <input type="file" id="excelFile" accept=".xlsx, .xls" required />
+            </div>
+            <button class="import-button" type="submit"><i class="fas fa-file-import"></i> Import</button>
+        </form>
+        <p class="help-text">* Only .xls and .xlsx files are allowed. Ensure the file format matches the template.</p>
+    </div>
+</div>
+<!-- Info Table to Display Added Users -->
+<div class="table-container" id="training-skills">
+<table class="imported-trainers" id="imported-trainers">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Department</th>
+            <th>Position</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody id="users-list">
+        <!-- Trainer information will be dynamically inserted here -->
+    </tbody>
+</table>
+
+</div>
+    </main>
+    </div>
+	<script type="module">
+import { put } from "@vercel/blob";
+
+/*** Constants and Storage Variables ***/
+const LOGIN_PAGE = "login.html";
+const BLOB_FILENAME = "trainers.json"; // Blob file name
+let BLOB_URL = ""; // Paste your existing blob URL here after first creation
+let trainerStorage = [];
+
+// DOM Elements
+const tableBody = document.querySelector("#users-list");
+const importExcelForm = document.getElementById("importExcelForm");
+const excelFileInput = document.getElementById("excelFile");
+
+/*** Utility Functions ***/
+
+// Redirect to login if not logged in
+function redirectToLoginIfNotLoggedIn() {
+    if (!sessionStorage.getItem("isLoggedIn")) {
+        window.location.href = LOGIN_PAGE;
+    }
+}
+
+// Save trainers to Vercel Blob
+async function saveTrainerStorage(data) {
+    const jsonData = JSON.stringify(data, null, 2);
+    const { url } = await put(BLOB_FILENAME, jsonData, { access: "public" });
+    BLOB_URL = url;
+    console.log("Trainers saved to blob:", url);
+}
+
+// Load trainers from Vercel Blob
+async function loadTrainerStorage() {
+    if (!BLOB_URL) return [];
+    try {
+        const res = await fetch(BLOB_URL);
+        if (!res.ok) return [];
+        return await res.json();
+    } catch (err) {
+        console.error("Error loading blob:", err);
+        return [];
+    }
+}
+
+/*** Table Population ***/
+function populateTable() {
+    if (!tableBody) {
+        console.error("Table body not found.");
+        return;
+    }
+
+    tableBody.innerHTML = "";
+
+    trainerStorage.forEach((user, index) => {
+        const newRow = document.createElement("tr");
+        newRow.innerHTML = `
+            <td><input type="text" value="${user.name || ""}" disabled /></td>
+            <td><input type="email" value="${user.email || ""}" disabled /></td>
+            <td><input type="text" value="${user.department || ""}" disabled /></td>
+            <td><input type="text" value="${user.position || ""}" disabled /></td>
+            <td style="display: none;"><input type="text" value="${user.password || ""}" disabled /></td>
+            <td>
+                <button class="edit-trainer-button" data-index="${index}">Edit</button>
+                <button class="save-trainer-button" data-index="${index}" style="display: none;">Save</button>
+                <button class="reset-trainer-password-button" data-index="${index}" style="display: none;">Reset Password</button>
+                <button class="remove-trainer-button" data-index="${index}" style="display: none;">Remove</button>
+            </td>
+        `;
+        tableBody.appendChild(newRow);
+
+        attachButtonEventListeners(newRow, index);
+    });
+}
+
+/*** Button Event Listeners ***/
+function attachButtonEventListeners(row, index) {
+    const editButton = row.querySelector(".edit-trainer-button");
+    const saveButton = row.querySelector(".save-trainer-button");
+    const removeButton = row.querySelector(".remove-trainer-button");
+
+    editButton.addEventListener("click", () => editUser(index, row));
+    saveButton.addEventListener("click", () => saveUser(index, row));
+    removeButton.addEventListener("click", () => removeUser(index));
+}
+
+/*** User Actions ***/
+function editUser(index, row) {
+    const editButton = row.querySelector(".edit-trainer-button");
+    const saveButton = row.querySelector(".save-trainer-button");
+    const resetButton = row.querySelector(".reset-trainer-password-button");
+    const removeButton = row.querySelector(".remove-trainer-button");
+
+    editButton.style.display = "none";
+    saveButton.style.display = "inline-block";
+    resetButton.style.display = "inline-block";
+    removeButton.style.display = "inline-block";
+
+    const inputs = row.querySelectorAll("input");
+    inputs.forEach(input => input.removeAttribute("disabled"));
+
+    const positionCell = row.children[3];
+    const currentPosition = positionCell.querySelector("input").value;
+    positionCell.innerHTML = `
+        <select>
+            <option value="Manager" ${currentPosition === "Manager" ? "selected" : ""}>Manager</option>
+            <option value="Team Leader" ${currentPosition === "Team Leader" ? "selected" : ""}>Team Leader</option>
+            <option value="Trainer" ${currentPosition === "Trainer" ? "selected" : ""}>Trainer</option>
+        </select>
+    `;
+}
+
+async function saveUser(index, row) {
+    const inputs = row.querySelectorAll("input, select");
+    if (inputs.length < 5) {
+        console.error("Not enough inputs in row for saving.");
+        return;
+    }
+
+    trainerStorage[index] = {
+        name: inputs[0].value,
+        email: inputs[1].value,
+        department: inputs[2].value,
+        position: inputs[3].value,
+        password: inputs[4].value
+    };
+
+    await saveTrainerStorage(trainerStorage);
+    populateTable();
+}
+
+async function removeUser(index) {
+    trainerStorage.splice(index, 1);
+    await saveTrainerStorage(trainerStorage);
+    populateTable();
+}
+
+/*** Excel Import ***/
+async function handleExcelImport(event) {
+    event.preventDefault();
+
+    const file = excelFileInput.files[0];
+    if (!file) {
+        alert("Please select an Excel file.");
+        return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = async function (e) {
+        const data = e.target.result;
+        const workbook = XLSX.read(data, { type: "binary" });
+        const sheetName = workbook.SheetNames[0];
+        const sheet = workbook.Sheets[sheetName];
+        const rows = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+
+        rows.slice(1).forEach(row => {
+            const [name, email, department, position, password] = row;
+            trainerStorage.push({
+                name,
+                email,
+                department,
+                position,
+                password: password || ""
+            });
+        });
+
+        await saveTrainerStorage(trainerStorage);
+        populateTable();
+    };
+
+    reader.readAsBinaryString(file);
+}
+
+/*** Initialization ***/
+document.addEventListener("DOMContentLoaded", async function () {
+    redirectToLoginIfNotLoggedIn();
+    trainerStorage = await loadTrainerStorage();
+    populateTable();
+
+    if (importExcelForm) {
+        importExcelForm.addEventListener("submit", handleExcelImport);
+    }
+});
+</script>
+
+</body>
+</html>
