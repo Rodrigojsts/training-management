@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+	<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Training Management System - TMS</title>
+		<link rel="stylesheet" href="file:///C:Users\r.santos\Documents\TMS\style\trainingManagement.css">
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+		<link rel="icon" href="file:///C:Users\r.santos\Documents\TMS\/images/favicon.png" type="image/png">
+		<script src="file:///C:Users\r.santos\Documents\TMS\script\trainingScript.js"></script>
+		
+	</head>
+	<body>
+		<header>
+			<div class="container">
+				<h1>Training Management System</h1>
+			</div>
+			<!-- Header Menu (Home icon and Burger menu on the same line) -->
+			<div class="header-menu">
+				<!-- Home Icon Button -->
+				<a href="file:///C:\Users\r.santos\Documents\TMS\home-page.html">
+					<button class="home-button">
+						<i class="fas fa-home"></i> <!-- Font Awesome Home Icon -->
+					</button>
+				</a>
+				<!-- Burger Menu -->
+				<div class="burger-menu">
+					<div></div>
+					<div></div>
+					<div></div>
+				</div>
+			</div>
+		</header>
+		<!-- Hidden Menu Content -->
+		<div class="burger-menu-content">
+			<!-- User Token -->
+			<div class="user-token">
+				<!-- Placeholder image, replace with actual image later -->
+				<div class="user-image");"></div>
+				<!-- User Name -->
+				<div class="user-name">John Doe</div> 
+			</div>
+			
+			<h3>Training Materials</h3>
+			<ul class="sub-menu">
+				<li><a href="file:///C:\Users\r.santos\Documents\TMS\materials.html">Material</a></li>
+				<li><a href="file:///C:\Users\r.santos\Documents\TMS\certification.html">Certifications</a></li>
+				<li><a href="file:///C:\Users\r.santos\Documents\TMS\evaluation-questionnaire.html">Evaluation questionnaire</a></li>
+				<li><a href="file:///C:\Users\r.santos\Documents\TMS\dailyTrainingReport.html">Daily Training Report</a></li>
+			</ul>
+			
+			<h3>Training Preparation</h3>
+			<ul class="sub-menu">
+				<li><a href="file:///C:\Users\r.santos\Documents\TMS\training-slots.html">Create Training Slots</a></li>
+				<li><a href="file:///C:\Users\r.santos\Documents\TMS\tlSlots.html">Assign to Training</a></li>
+				<li><a href="file:///C:\Users\r.santos\Documents\TMS\training-plan.html">Training Plan</a></li>
+				<li><a href="file:///C:\Users\r.santos\Documents\TMS\schedule.html">Schedule</a></li>
+			</ul>
+			
+			<h3>Accounts</h3>
+			<ul class="sub-menu">
+				<li><a href="file:///C:\Users\r.santos\Documents\TMS\manage-trainers.html">Manage Trainer's account</a></li>
+				<li><a href="file:///C:\Users\r.santos\Documents\TMS\agents.html">Manage Agents</a></li>
+			</ul>
+			<button class="logout" onclick="logout()">Logout</button>
+		</div>
+		<div class="site-content">
+			<main>
+				<!-- Rest of your content here -->
+				<div class="background-search-image">
+				</div>
+				<div class="search-container">
+					<h1>Search</h1>
+					<div class="search-box">
+						<input type="text" placeholder="Name & Surname" id="search-name" class="search-input" oninput="showSuggestions('name')">
+						<div id="name-suggestions" class="suggestions-container"></div> <!-- Name Suggestions -->
+
+						<input type="email" placeholder="Email" id="search-email" class="search-input" oninput="showSuggestions('email')">
+						<div id="email-suggestions" class="suggestions-container"></div> <!-- Email Suggestions -->
+
+						<input type="text" placeholder="Market/Role" id="search-market" class="search-input" oninput="showSuggestions('market')">
+						<div id="market-suggestions" class="suggestions-container"></div> <!-- Market Suggestions -->
+
+						<button class="search-button" onclick="searchUsers()">Search</button>
+					</div>
+				
+					<div class="search-details">
+					<h2>Search Results</h2>
+					<!-- User details will be displayed here -->
+					</div>
+				</div>
+				<!-- Main Content Area (Search Results & Person Details) -->
+				<div class="update-needed">
+  <div class="training-plan">
+    <h2>Pending Updates</h2>
+    <div class="pending-updates"></div> <!-- this is where updates should appear -->
+  </div>
+</div>
+
+					<div class="training-plan">
+						<h2>Monthly Training</h2>
+						<div class="training-slots-to-invite" id="training-slots-to-invite"></div>
+						<!-- Trainings assigned to the trainer logged in appear here -->
+							<table class="training-table-home">
+							  <thead>
+								<tr>
+								  <th>Training Name</th>
+								  <th>Training Start Date</th>
+								  <th>Training End Date</th>
+								  <th>Training Start Time [CET]</th>
+								  <th>Training End Time [CET]</th>
+								  <th>Available Spots</th>
+								  <th>Agents Assigned</th>
+								  <th>Total Training Duration [h]</th>
+								  <th>HUB</th>
+								  <th>Language</th>
+								  <th>Trainer</th>
+								  <th>Invitation</th>
+								</tr>
+							  </thead>
+							  <tbody>
+								<!-- Table rows will be populated here -->
+							  </tbody>
+							</table>
+							<div class="pagination-controls"></div>
+					</div>
+			</main>
+		</div>
+		<script>
+		// Global variables for localStorage items
+// Global variables for localStorage items
+let loggedInEmail = localStorage.getItem("loggedInEmail");
+let loggedInName = localStorage.getItem("loggedInName") || "";
+localStorage.setItem("loggedInName", loggedInName); // Ensure it's stored properly
+let trainerStorage = JSON.parse(localStorage.getItem("trainerStorage")) || [];
+let storedTrainings = JSON.parse(localStorage.getItem('trainings')) || [];
+
+// Ensure this code runs once the DOM is fully loaded
+document.addEventListener('DOMContentLoaded', function () {
+    // Redirect if not logged in
+    if (!localStorage.getItem("isLoggedIn")) {
+        window.location.href = "file:///C:/Users/r.santos/Documents/TMS/home-page.html";
+    }
+    if (window.location.pathname !== '/C:/Users/r.santos/Documents/TMS/home-page.html') return;
+    // Load training data
+    loadTrainingData();
+	displayPendingUpdates();
+});
+
+const updatesContainer = document.querySelector('.pending-updates');
+updatesContainer.innerHTML = "<p>Update 1: Training updated.</p>";
+
+function displayPendingUpdates() {
+  const pendingUpdates = JSON.parse(localStorage.getItem("pendingUpdates")) || [];
+  const container = document.querySelector(".pending-updates");
+  container.innerHTML = ""; // Clear existing content
+
+  if (pendingUpdates.length === 0) {
+    container.innerHTML = "<p>No pending updates.</p>";
+    return;
+  }
+
+  pendingUpdates.forEach((material, index) => {
+    const div = document.createElement("div");
+    div.className = "pending-update-item";
+    div.innerHTML = `
+      <strong>${material.trainingName}</strong> - ${material.trainerOwner}<br/>
+      Last updated: ${material.lastUpdated || "N/A"}<br/>
+      <em>Comment:</em> ${material.comment || "<i>No comment</i>"}<br/>
+      <button onclick="removePendingUpdate(${index})">Remove</button>
+      <hr/>
+    `;
+    container.appendChild(div);
+  });
+}
+
+
+
+function loadTrainingData() {
+    // Retrieve the logged-in trainer's position
+    const loggedInUser = trainerStorage.find(user => user.email === loggedInEmail);
+
+    console.log("loggedInName =", loggedInName);
+    console.log("loggedInPosition =", loggedInUser ? loggedInUser.position : "Unknown");
+
+    const tableBody = document.querySelector('.training-table-home tbody');
+
+    if (!tableBody) {
+        console.error("Table body not found. Check your table structure or selector.");
+        return;
+    }
+
+    // Clear the current table rows
+    tableBody.innerHTML = '';
+
+    // Check if the trainer is a Manager or Team Leader
+    const isManagerOrTeamLeader = loggedInUser && (loggedInUser.position === "Manager" || loggedInUser.position === "Team Leader");
+
+    // Filter trainings based on role
+    const filteredTrainings = isManagerOrTeamLeader
+        ? storedTrainings
+        : storedTrainings.filter(training => training.trainer === loggedInName);
+
+    // Sort trainings by closest start date to today
+    const today = new Date();
+    filteredTrainings.sort((a, b) => Math.abs(new Date(a.startDate) - today) - Math.abs(new Date(b.startDate) - today));
+
+    // Display "No training assigned" if no results
+    if (filteredTrainings.length === 0) {
+        const row = document.createElement('tr');
+        row.classList.add('no-trainings');
+        row.innerHTML = `<td colspan="12" style="text-align: center;">No training assigned</td>`;
+        tableBody.appendChild(row);
+    } else {
+        // Paginate the training data
+        const startIndex = (currentPage - 1) * itemsPerPage;
+        const endIndex = startIndex + itemsPerPage;
+        const paginatedTrainings = filteredTrainings.slice(startIndex, endIndex);
+
+        // Add rows for paginated data
+        paginatedTrainings.forEach(training => {
+            const row = document.createElement('tr');
+            row.classList.add('table-row');
+
+            // Calculate slots
+            const assignedSlots = (training.slotDetails || []).length;
+            const totalSlots = parseInt(training.slots, 10) || 0;
+            const availableSlots = totalSlots - assignedSlots;
+
+            // Populate row with training data
+            row.innerHTML = `
+                <td>${training.trainingName}</td>
+                <td>${formatDate(training.startDate)}</td>
+                <td>${formatDate(training.endDate)}</td>
+                <td>${training.startTime}</td>
+                <td>${training.endTime}</td>
+                <td>${availableSlots}</td>
+                <td>${assignedSlots}</td>
+                <td>${calculateDuration(training.startDate, training.endDate, training.startTime, training.endTime)}</td>
+                <td>${training.hub}</td>
+                <td>${training.language}</td>
+                <td>${training.trainer}</td>
+                <td><button class="send-invite-button">Send</button></td>
+            `;
+            tableBody.appendChild(row);
+        });
+    }
+
+    // Render pagination controls
+    renderPaginationControls(filteredTrainings.length);
+}
+
+function removePendingUpdate(index) {
+  const pendingUpdates = JSON.parse(localStorage.getItem("pendingUpdates")) || [];
+  pendingUpdates.splice(index, 1);
+  localStorage.setItem("pendingUpdates", JSON.stringify(pendingUpdates));
+  displayPendingUpdates();
+}
+
+
+// Function to calculate duration between start and end dates
+function calculateDuration(startDate, endDate, startTime, endTime) {
+
+
+    // Convert start and end dates to Date objects
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+
+    if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+        console.error("Invalid date format. Ensure correct input format.");
+        return "Invalid Date";
+    }
+
+    if (start.getTime() === end.getTime()) {
+        // If dates are the same, calculate time difference in hours and minutes
+        const [startHour, startMinute] = startTime.split(':').map(Number);
+        const [endHour, endMinute] = endTime.split(':').map(Number);
+
+        const startDateTime = new Date(start);
+        startDateTime.setHours(startHour, startMinute, 0, 0);
+
+        const endDateTime = new Date(end);
+        endDateTime.setHours(endHour, endMinute, 0, 0);
+
+        const diffMilliseconds = endDateTime - startDateTime;
+        const diffHours = Math.floor(diffMilliseconds / (1000 * 60 * 60)); // Convert to hours
+        const diffMinutes = Math.floor((diffMilliseconds % (1000 * 60 * 60)) / (1000 * 60)); // Convert to minutes
+
+        return `${diffHours}h ${diffMinutes}m`;
+    } else {
+        // Calculate the difference in days
+        const diffTime = end - start; // Difference in milliseconds
+        let diffDays = diffTime / (1000 * 60 * 60 * 24); // Convert to days
+        diffDays = diffDays === 0 ? 1 : diffDays; // Ensure at least 1 day
+
+        return `${diffDays} days`;
+    }
+}
+
+// Pagination variables
+let currentPage = 1;
+const itemsPerPage = 10;
+
+// Helper function to format dates as DD/MM/YYYY
+function formatDate(dateString) {
+    const date = new Date(dateString);
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+}
+
+// Function to render pagination controls
+function renderPaginationControls(totalItems) {
+    const paginationContainer = document.querySelector('.pagination-controls');
+    if (!paginationContainer) {
+        console.error("Pagination container not found.");
+        return;
+    }
+
+    paginationContainer.innerHTML = '';
+    const totalPages = Math.ceil(totalItems / itemsPerPage);
+
+    if (totalPages <= 1) return;
+
+    const createPageButton = (pageNumber, text) => {
+        const button = document.createElement('button');
+        button.textContent = text;
+        button.classList.add('pagination-button');
+        if (pageNumber === currentPage) {
+            button.classList.add('active');
+        }
+        button.addEventListener('click', () => {
+            currentPage = pageNumber;
+            loadTrainingData();
+        });
+        return button;
+    };
+
+    if (currentPage > 1) {
+        paginationContainer.appendChild(createPageButton(1, '<<'));
+        paginationContainer.appendChild(createPageButton(currentPage - 1, '<'));
+    }
+
+    const maxPageButtons = 3;
+    const pagesToShow = [];
+
+    if (totalPages <= maxPageButtons) {
+        for (let i = 1; i <= totalPages; i++) {
+            pagesToShow.push(i);
+        }
+    } else {
+        if (currentPage <= maxPageButtons) {
+            pagesToShow.push(1, 2, 3);
+            pagesToShow.push('...');
+        } else if (currentPage > totalPages - maxPageButtons) {
+            pagesToShow.push('...');
+            for (let i = totalPages - 2; i <= totalPages; i++) {
+                pagesToShow.push(i);
+            }
+        } else {
+            pagesToShow.push('...');
+            for (let i = currentPage - 1; i <= currentPage + 1; i++) {
+                pagesToShow.push(i);
+            }
+            pagesToShow.push('...');
+        }
+    }
+
+    pagesToShow.forEach(page => {
+        if (page === '...') {
+            const ellipsis = document.createElement('span');
+            ellipsis.textContent = '...';
+            paginationContainer.appendChild(ellipsis);
+        } else {
+            paginationContainer.appendChild(createPageButton(page, page));
+        }
+    });
+
+    if (currentPage < totalPages) {
+        paginationContainer.appendChild(createPageButton(currentPage + 1, '>'));
+        paginationContainer.appendChild(createPageButton(totalPages, '>>'));
+    }
+}
+
+// Function to display search results in the details div
+function displaySearchResults(users) {
+    const detailsDiv = document.querySelector(".details");
+    if (!detailsDiv) {
+        console.error("Details div not found.");
+        return;
+    }
+
+    detailsDiv.innerHTML = '';
+    if (users.length > 0) {
+        const resultsHeading = document.createElement("h2");
+        resultsHeading.textContent = "Search Results";
+        detailsDiv.appendChild(resultsHeading);
+
+        const table = document.createElement("table");
+        table.classList.add("info-table");
+
+        table.innerHTML = `
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Department</th>
+                    <th>Market</th>
+                    <th>Position</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${users.map(user => `
+                    <tr>
+                        <td>${user.name}</td>
+                        <td>${user.email}</td>
+                        <td>${user.department}</td>
+                        <td>${user.market}</td>
+                        <td>${user.position}</td>
+                    </tr>
+                `).join('')}
+            </tbody>
+        `;
+        detailsDiv.appendChild(table);
+    } else {
+        detailsDiv.innerHTML = "<p>No users found based on your search criteria.</p>";
+    }
+}
+
+// Ensure this code runs once the DOM is fully loaded
+document.addEventListener('DOMContentLoaded', function () {
+    // Redirect if not logged in
+    if (!localStorage.getItem("isLoggedIn")) {
+        window.location.href = "file:///C:/Users/r.santos/Documents/TMS/home-page.html";
+    }
+    if (window.location.pathname !== '/C:/Users/r.santos/Documents/TMS/home-page.html') return;
+
+    // Display logged-in user's name
+    displayLoggedInUser();
+
+    // Load training data
+    loadTrainingData();
+});
+
+// Function to display the logged-in user's name
+function displayLoggedInUser() {
+    const userNameDiv = document.querySelector('.user-name');
+    if (userNameDiv) {
+        userNameDiv.textContent = loggedInName || "User";
+    } else {
+        console.error("User name div not found.");
+    }
+}
+		</script>
+
+	</body>
+</html>
