@@ -284,6 +284,7 @@ async function handleExcelImport(event) {
     }
 
     const reader = new FileReader();
+
     reader.onload = async function (e) {
         const data = e.target.result;
         const workbook = XLSX.read(data, { type: "binary" });
@@ -291,24 +292,34 @@ async function handleExcelImport(event) {
         const sheet = workbook.Sheets[sheetName];
         const rows = XLSX.utils.sheet_to_json(sheet, { header: 1 });
 
+        // Clear current storage if you want to overwrite instead of append
+        // trainerStorage = [];
+
+        // Append new trainers from Excel file
         rows.slice(1).forEach(row => {
             const [name, email, department, position, password] = row;
             trainerStorage.push({
-                name,
-                email,
-                department,
-                position,
+                name: name || "",
+                email: email || "",
+                department: department || "",
+                position: position || "",
                 password: password || ""
             });
         });
 
+        // Save updated storage to Vercel Blob
         await saveTrainerStorage(trainerStorage);
-        trainerStorage = await loadTrainerStorage(); // <-- reload from blob
+
+        // Reload from blob (important if URL changed after upload)
+        trainerStorage = await loadTrainerStorage();
+
+        // Refresh the table UI
         populateTable();
     };
 
     reader.readAsBinaryString(file);
 }
+
 
 
 /*** Initialization ***/
