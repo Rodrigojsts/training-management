@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Logout
   logoutButton.addEventListener('click', () => {
     setLoggedIn(false);
-    window.location.href = "file:///C:/Users/r.santos/Documents/TMS/login.html";
+    window.location.href = "login.html";
   });
 
   // Burger Menu Toggle
