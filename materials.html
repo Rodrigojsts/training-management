@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+	<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Training Management System - TMS</title>
+		<link rel="stylesheet" href="file:///C:Users\r.santos\Documents\TMS\style\trainingManagement.css">
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+		<script src="file:///C:Users\r.santos\Documents\TMS\script\trainingScript.js"></script>
+		<link rel="icon" href="file:///C:Users\r.santos\Documents\TMS\/images/favicon.png" type="image/png">
+			
+	</head>
+	<body>
+		<header>
+			<div class="container">
+				<h1>Training Management System</h1>
+			</div>
+			<!-- Header Menu (Home icon and Burger menu on the same line) -->
+			<div class="header-menu">
+				<!-- Home Icon Button -->
+				<a href="home-page.html">
+					<button class="home-button">
+						<i class="fas fa-home"></i> <!-- Font Awesome Home Icon -->
+					</button>
+				</a>
+				<!-- Burger Menu -->
+				<div class="burger-menu">
+					<div></div>
+					<div></div>
+					<div></div>
+				</div>
+			</div>
+		</header>
+		<!-- Hidden Menu Content -->
+		<div class="burger-menu-content">
+			<!-- User Token -->
+			<div class="user-token">
+				<!-- Placeholder image, replace with actual image later -->
+				<div class="user-image");"></div>
+				<!-- User Name -->
+				<div class="user-name">John Doe</div> 
+			</div>
+			<h3>Training Material</h3>
+			<ul class="sub-menu">
+				<li><a href="file:///C:\Users\r.santos\Documents\TMS\materials.html">Material</a></li>
+				<li><a href="file:///C:\Users\r.santos\Documents\TMS\certification.html">Certifications</a></li>
+				<li><a href="file:///C:\Users\r.santos\Documents\TMS\evaluation-questionnaire.html">Evaluation questionnaire</a></li>
+				<li><a href="file:///C:\Users\r.santos\Documents\TMS\dailyTrainingReport.html">Daily Training Report</a></li>				
+			</ul>
+			
+			<h3>Training Preparation</h3>
+			<ul class="sub-menu">
+				<li><a href="file:///C:\Users\r.santos\Documents\TMS\training-slots.html">Create Training Slots</a></li>
+				<li><a href="file:///C:\Users\r.santos\Documents\TMS\tlSlots.html">Assign to Training</a></li>
+				<li><a href="file:///C:\Users\r.santos\Documents\TMS\training-plan.html">Training Plan</a></li>
+				<li><a href="file:///C:\Users\r.santos\Documents\TMS\schedule.html">Schedule</a></li>				
+			</ul>
+			
+			<h3>Accounts</h3>
+			<ul class="sub-menu">
+				<li><a href="file:///C:\Users\r.santos\Documents\TMS\manage-trainers.html">Manage Trainer's account</a></li>
+				<li><a href="file:///C:\Users\r.santos\Documents\TMS\agents.html">Manage Agents</a></li>				
+			</ul>
+			<button class="logout" onclick="logout()">Logout</Button>
+		</div>
+		<div class="site-content">
+		<main>
+			<h3 class="page-name">Materials</h3>
+			<!-- Add New Material Form -->
+			<div id="add-material-form">
+				<h2>Add New Material</h2>
+				<form id="new-material-form">
+					    <label>Training Type: 
+							<select id="training-type">
+								<option value="" disabled selected>Select a type of training</option>
+								<option value="Training Path">Training Path</option>
+								<option value="Workshop">Workshop</option>
+								<option value="Case Study">Case Study</option>
+							</select>				
+						</label>
+						<div class="training-options">
+							<label>Advance Training <input type="checkbox" id="advance-training" /></label>
+							<label>Basic Training <input type="checkbox" id="basic-training" /></label>
+						</div>
+					<label>Training Name: 
+						<input type="text" id="training-name" />
+						<input type="url" id="training-name-link" placeholder="Link for Training Name" />
+					</label>
+					<label>Agenda: 
+						<input type="text" id="agenda" />
+						<input type="url" id="agenda-link" placeholder="Link for Agenda" />
+					</label>
+					<label>Curriculum: 
+						<input type="text" id="curriculum" />
+						<input type="url" id="curriculum-link" placeholder="Link for Curriculum" />
+					</label>
+					<label>Conspect: 
+						<input type="text" id="conspect" />
+						<input type="url" id="conspect-link" placeholder="Link for Conspect" />
+					</label>
+					<label>Additional Material: 
+						<div id="additional-material-container">
+							<input type="text" class="additional-material" placeholder="Additional Material Name" />
+							<input type="url" class="additional-material-link" placeholder="Link for Additional Material" />
+						</div>
+					<button type="button" id="add-additional-material">+</button>
+					</label>
+					<label>Test Answers: 
+						<input type="text" id="test-answers" />
+						<input type="url" id="test-answers-link" placeholder="Link for Test Answers" />
+					</label>
+					<label>Test For Agents: 
+						<input type="text" id="test-for-agents" />
+						<input type="url" id="test-for-agents-link" placeholder="Link for Test For Agents" />
+					</label>
+					
+					<!-- Trainer Owner dropdown -->
+					<label>Trainer Owner: 
+						<select id="trainer-owner"></select>
+					</label>
+					
+					<label>Updated: <input type="checkbox" id="updated" /></label>	
+
+					<div class="training-target">
+					<h4>Target public:</h4>
+						<label>Frontline <input type="checkbox" id="frontline" /></label>
+						<label>Support <input type="checkbox" id="support" /></label>    
+						<label>Backoffice <input type="checkbox" id="backoffice" /></label>            
+						<label>Leisure <input type="checkbox" id="leisure" /></label>        
+						<label>Trainer <input type="checkbox" id="trainer" /></label>    
+						<label>Team leader/Manager <input type="checkbox" id="team-leader" /></label>                                    
+					</div>
+										<button type="button" id="add-material-button">Add Material</button>
+				</form>
+			</div>
+			<table id="training-material" class="training-material-table">
+			  <thead>
+				<tr>
+				  <th>Training Type</th>
+				  <th>Training Name</th>
+				  <th>Agenda</th>
+				  <th>Curriculum</th>
+				  <th>Conspect</th>
+				  <th>Additional Material</th>
+				  <th>Test Answers</th>
+				  <th>Test For Agents</th>
+				  <th>Trainer Owner</th>
+				  <th>Updated</th>
+				  <th>Skill</th>
+				  <th>Target</th>
+				  <th>Actions</th>
+				</tr>
+			  </thead>
+			  <tbody>
+				<!-- Material rows will be inserted here -->
+			  </tbody>
+			</table>
+		</main>
+		</div>
+		<script>
+// =======================
+// Global Variables & DOM Elements
+// =======================
+
+const loggedInEmail = localStorage.getItem("loggedInEmail");
+const loggedInName = localStorage.getItem("loggedInName");
+const trainerStorage = JSON.parse(localStorage.getItem("trainerStorage")) || [];
+const trainingMaterials = JSON.parse(localStorage.getItem("trainingMaterial")) || [];
+
+// Get DOM elements upfront for easier access
+const trainerDropdown = document.getElementById("trainer-owner");
+const tableBody = document.querySelector("#training-material tbody");
+const trainingNameInput = document.getElementById("training-name"); //Added for better readability
+const addMaterialButton = document.getElementById("add-material-button"); // Added for better readability
+
+// =======================
+// Event Listeners
+// =======================
+
+document.addEventListener("DOMContentLoaded", onDOMContentLoaded);
+trainingNameInput.addEventListener("input", handleAutofillFields);
+document.getElementById("add-additional-material").addEventListener("click", addAdditionalMaterialFields);
+addMaterialButton.addEventListener("click", handleAddOrUpdateMaterial);
+
+// =======================
+// Initialization & Data Loading
+// =======================
+
+document.addEventListener("DOMContentLoaded", function () {
+    const advanceTraining = document.getElementById("advance-training");
+    const basicTraining = document.getElementById("basic-training");
+
+    advanceTraining.addEventListener("change", function () {
+        if (advanceTraining.checked) {
+            basicTraining.checked = false;
+        }
+    });
+
+    basicTraining.addEventListener("change", function () {
+        if (basicTraining.checked) {
+            advanceTraining.checked = false;
+        }
+    });
+});
+
+function onDOMContentLoaded() {
+
+  //Avoid hardcoding paths.  Use a relative path or a variable.  This is a MAJOR security risk.
+  //if (window.location.pathname !== '/C:/Users/r.santos/Documents/TMS/materials.html') return;
+
+  // Redirect if not logged in
+  if (!localStorage.getItem("isLoggedIn")) {
+    window.location.href = "login.html";
+    return;
+  }
+
+  initializeTrainerDetails();
+  loadTrainerDropdown();
+  loadTrainingData();
+}
+
+function initializeTrainerDetails() {
+  const loggedInUser = trainerStorage.find(user => user.email === loggedInEmail);
+  trainerDropdown.value = loggedInName || (loggedInUser ? loggedInUser.name : ""); //Improved conditional assignment
+}
+
+function loadTrainerDropdown() {
+    trainerDropdown.innerHTML = ""; // Clear existing options
+
+    // Add placeholder option
+    const placeholderOption = document.createElement("option");
+    placeholderOption.value = "";
+    placeholderOption.textContent = "Select a Trainer";
+    placeholderOption.disabled = true;
+    placeholderOption.selected = true;
+    trainerDropdown.appendChild(placeholderOption);
+
+    // Sort trainers alphabetically by name
+    const sortedTrainers = trainerStorage.slice().sort((a, b) => a.name.localeCompare(b.name));
+
+    sortedTrainers.forEach(trainer => {
+        const option = document.createElement("option");
+        option.value = trainer.name;
+        option.textContent = trainer.name;
+        trainerDropdown.appendChild(option);
+    });
+}
+
+// =======================
+// Table Data Handling
+// =======================
+
+function loadTrainingData() {
+    tableBody.innerHTML = trainingMaterials.length ? "" : '<tr><td colspan="11">No materials available</td></tr>';
+    trainingMaterials.forEach((material, index) => {
+        const newRow = createTrainingRow(material, index);
+        tableBody.appendChild(newRow);
+    });
+}
+
+function createTrainingRow(material, index) {
+    const newRow = document.createElement("tr");
+    newRow.innerHTML = createTrainingRowHTML(material, index);
+    newRow.querySelector(".edit-material-button").addEventListener("click", () => editMaterial(index));
+    newRow.querySelector(".delete-material-button").addEventListener("click", () => deleteMaterial(index));
+	newRow.querySelector(".request-update-material-button").addEventListener("click", () => requpdateMaterial(index));
+
+    return newRow;
+}
+
+function createTrainingRowHTML(material, index) {
+    return `
+        <td>${material.trainingType}</td>
+        <td>${createLink(material.trainingNameLink, material.trainingName)}</td>
+        <td>${createLink(material.agendaLink, material.agenda)}</td>
+        <td>${createLink(material.curriculumLink, material.curriculum)}</td>
+        <td>${createLink(material.conspectLink, material.conspect)}</td>
+        <td>${material.additionalMaterials.map(m => createLink(m.link, m.name)).join(", ")}</td>
+        <td>${createLink(material.testAnswersLink, material.testAnswers)}</td>
+        <td>${createLink(material.testForAgentsLink, material.testForAgents)}</td>
+        <td>${material.trainerOwner}</td>
+        <td>${material.lastUpdated} by ${material.trainerName}</td>
+        <td>
+            ${material.advanceTraining ? "Advance" : ""}
+            ${material.basicTraining ? "Basic" : ""}
+        </td>
+        <td>
+            ${Object.keys(material.targetPublic)
+                .filter(key => material.targetPublic[key])
+                .map(key => key.charAt(0).toUpperCase() + key.slice(1)) // Capitalize
+                .join(", ")}
+        </td>
+        <td>
+          <div class="button-container">
+            <button class="edit-material-button" data-index="${index}">Edit</button>
+            <button class="delete-material-button" data-index="${index}">Delete</button>
+			<button class="request-update-material-button" data-index="${index}">Request update</button>
+          </div>
+        </td>
+    `;
+}
+
+function createLink(url, text){
+    return url ? `<a href="${url}" target="_blank">${text}</a>` : text;
+}
+
+// =======================
+// Form Handling
+// =======================
+
+function handleAddOrUpdateMaterial() {
+    const formData = collectFormData();
+
+    if (window.editIndex !== undefined) {
+        // If editing, update the existing entry
+        trainingMaterials[window.editIndex] = { ...trainingMaterials[window.editIndex], ...formData };
+        window.editIndex = undefined;
+        document.getElementById("add-material-button").textContent = "Add Material";
+    } else {
+        // Otherwise, add a new material
+        trainingMaterials.push(formData);
+    }
+
+    // Save & refresh table
+    localStorage.setItem("trainingMaterial", JSON.stringify(trainingMaterials));
+    loadTrainingData();
+    document.getElementById("new-material-form").reset();
+}
+
+function collectFormData() {
+    return {
+        trainingType: document.getElementById("training-type").value,
+        trainingName: trainingNameInput.value,
+        agenda: document.getElementById("agenda").value,
+        curriculum: document.getElementById("curriculum").value,
+        conspect: document.getElementById("conspect").value,
+        testAnswers: document.getElementById("test-answers").value,
+        testForAgents: document.getElementById("test-for-agents").value,
+        trainerOwner: trainerDropdown.value,
+        updated: document.getElementById("updated").checked,
+        lastUpdated: document.getElementById("updated").checked ? new Date().toLocaleDateString("en-GB") : "",
+        trainerName: document.getElementById("updated").checked ? loggedInName : "",
+        trainingNameLink: document.getElementById("training-name-link").value,
+        agendaLink: document.getElementById("agenda-link").value,
+        curriculumLink: document.getElementById("curriculum-link").value,
+        conspectLink: document.getElementById("conspect-link").value,
+        testAnswersLink: document.getElementById("test-answers-link").value,
+        testForAgentsLink: document.getElementById("test-for-agents-link").value,
+        additionalMaterials: collectAdditionalMaterials(),
+
+        // Capture training options (Advance or Basic)
+        advanceTraining: document.getElementById("advance-training").checked,
+        basicTraining: document.getElementById("basic-training").checked,
+
+        // Capture target audience selections
+        targetPublic: {
+            frontline: document.getElementById("frontline").checked,
+            support: document.getElementById("support").checked,
+            backoffice: document.getElementById("backoffice").checked,
+            leisure: document.getElementById("leisure").checked,
+            trainer: document.getElementById("trainer").checked,
+            teamLeader: document.getElementById("team-leader").checked
+        }
+    };
+}
+
+function collectAdditionalMaterials() {
+    return [...document.querySelectorAll(".additional-material")].map((input, index) => ({
+        name: input.value,
+        link: document.querySelectorAll(".additional-material-link")[index].value,
+    }));
+}
+
+// =======================
+// Helper Functions
+// =======================
+
+function handleAutofillFields() {
+    const trainingName = trainingNameInput.value;
+    ["agenda", "curriculum", "conspect", "test-answers", "test-for-agents"].forEach(field => {
+        document.getElementById(field).value = trainingName ? `${trainingName}_${field.replace("-", "_")}` : "";
+    });
+}
+
+function addAdditionalMaterialFields() {
+    const container = document.getElementById("additional-material-container");
+
+    const materialDiv = document.createElement("div");
+    materialDiv.className = "additional-material-group"; // Group div for styling & removal
+
+    const nameInput = document.createElement("input");
+    nameInput.type = "text";
+    nameInput.className = "additional-material";
+    nameInput.placeholder = "Additional Material Name";
+    materialDiv.appendChild(nameInput);
+
+    const linkInput = document.createElement("input");
+    linkInput.type = "url";
+    linkInput.className = "additional-material-link";
+    linkInput.placeholder = "Link for Additional Material";
+    materialDiv.appendChild(linkInput);
+
+    const removeButton = document.createElement("button");
+    removeButton.textContent = "−";
+    removeButton.className = "remove-material-button";
+    removeButton.addEventListener("click", () => materialDiv.remove());
+    materialDiv.appendChild(removeButton);
+
+    container.appendChild(materialDiv);
+}
+
+
+function editMaterial(index) {
+    const material = trainingMaterials[index];
+    window.editIndex = index; // Store index for updating
+	
+	// Update form heading
+    document.querySelector("#add-material-form h2").textContent = `Edit ${material.trainingName}`;
+
+    // Update button text
+    const addMaterialButton = document.getElementById("add-material-button");
+    addMaterialButton.textContent = "Save Material";
+
+    // Ensure targetPublic is always treated as an array
+    const targetPublicArray = Array.isArray(material.targetPublic) ? material.targetPublic : [];
+
+    // Fill form fields
+    document.getElementById("training-type").value = material.trainingType;
+    document.getElementById("training-name").value = material.trainingName;
+    document.getElementById("training-name-link").value = material.trainingNameLink;
+    document.getElementById("agenda").value = material.agenda;
+    document.getElementById("agenda-link").value = material.agendaLink;
+    document.getElementById("curriculum").value = material.curriculum;
+    document.getElementById("curriculum-link").value = material.curriculumLink;
+    document.getElementById("conspect").value = material.conspect;
+    document.getElementById("conspect-link").value = material.conspectLink;
+    document.getElementById("test-answers").value = material.testAnswers;
+    document.getElementById("test-answers-link").value = material.testAnswersLink;
+    document.getElementById("test-for-agents").value = material.testForAgents;
+    document.getElementById("test-for-agents-link").value = material.testForAgentsLink;
+    document.getElementById("trainer-owner").value = material.trainerOwner;
+    document.getElementById("updated").checked = material.updated;
+
+    // Handle checkboxes for training type
+    document.getElementById("advance-training").checked = material.advanceTraining;
+    document.getElementById("basic-training").checked = material.basicTraining;
+
+ // ✅ Fix: Handle `targetPublic` stored as an object with boolean values
+    const targetPublicCheckboxes = ["frontline", "support", "backoffice", "leisure", "trainer", "team-leader"];
+    targetPublicCheckboxes.forEach(id => {
+        document.getElementById(id).checked = material.targetPublic[id] || false;
+    });
+
+    // Change button text to "Update Material"
+    document.getElementById("add-material-button").textContent = "Update Material";
+	
+	// Handle additional materials
+const additionalMaterialContainer = document.getElementById("additional-material-container");
+additionalMaterialContainer.innerHTML = ""; // Clear existing fields
+
+material.additionalMaterials.forEach((item) => {
+    const materialDiv = document.createElement("div");
+    materialDiv.className = "additional-material-group"; // Group for each set of inputs
+
+    const nameInput = document.createElement("input");
+    nameInput.type = "text";
+    nameInput.className = "additional-material";
+    nameInput.value = item.name;
+    nameInput.placeholder = "Additional Material Name";
+    materialDiv.appendChild(nameInput);
+
+    const linkInput = document.createElement("input");
+    linkInput.type = "url";
+    linkInput.className = "additional-material-link";
+    linkInput.value = item.link;
+    linkInput.placeholder = "Link for Additional Material";
+    materialDiv.appendChild(linkInput);
+
+    const removeButton = document.createElement("button");
+    removeButton.textContent = "−";
+    removeButton.className = "remove-material-button";
+    removeButton.addEventListener("click", () => materialDiv.remove());
+    materialDiv.appendChild(removeButton);
+
+    additionalMaterialContainer.appendChild(materialDiv);
+});
+
+	
+	console.log(trainingMaterials[index]); // Check if targetPublic is stored correctly
+}
+
+
+function requpdateMaterial(index) {
+  const material = trainingMaterials[index];
+
+  const pendingUpdates = JSON.parse(localStorage.getItem("pendingUpdates")) || [];
+
+  const alreadyExists = pendingUpdates.some(m => m.trainingName === material.trainingName);
+  if (alreadyExists) {
+    alert("This material has already been requested for an update.");
+    return;
+  }
+
+  // Prompt user for a comment
+  const comment = prompt("Add a comment for this update request:");
+
+  // Add the comment to the material object
+  const materialWithComment = {
+    ...material,
+    comment: comment || ""  // default to empty string if user cancels
+  };
+
+  pendingUpdates.push(materialWithComment);
+  localStorage.setItem("pendingUpdates", JSON.stringify(pendingUpdates));
+
+  displayPendingUpdates();
+}
+
+
+
+
+
+function deleteMaterial(index) {
+    trainingMaterials.splice(index, 1);
+    localStorage.setItem("trainingMaterial", JSON.stringify(trainingMaterials));
+    loadTrainingData();
+}
+
+// =======================
+// Excel Export (Requires XLSX library)
+// =======================
+
+
+function downloadExcel() {
+  if (trainingMaterials.length === 0) {
+    alert("No training materials available to export.");
+    return;
+  }
+
+  const excelData = trainingMaterials.map((material, index) => ({
+    "S.No.": index + 1,
+    "Training Type": material.trainingType,
+    "Training Name": material.trainingName,
+    "Agenda": material.agenda,
+    "Curriculum": material.curriculum,
+   
+    "Conspect": material.conspect,
+    "Additional Materials": material.additionalMaterials.map(m => m.name).join(", "),
+    "Test Answers": material.testAnswers,
+    "Test for Agents": material.testForAgents,
+    "Trainer Owner": material.trainerOwner,
+    "Last Updated": material.lastUpdated,
+    "Trainer Name": material.trainerName,
+  }));
+
+  const ws = XLSX.utils.json_to_sheet(excelData);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, "Training Materials");
+
+  // Save Excel file
+  XLSX.writeFile(wb, "training_materials.xlsx");
+}
+		</script>
+</body>
+</html>
