@@ -34,7 +34,6 @@
   </div>
 
 <script>
-<script>
 // Initialize localStorage variables only if not already set
 if (localStorage.getItem("isLoggedIn") === null) {
     localStorage.setItem("isLoggedIn", "false");
@@ -47,10 +46,8 @@ if (localStorage.getItem("loggedInName") === null) {
 }
 
 document.addEventListener('DOMContentLoaded', function () {
-    const isLoggedIn = localStorage.getItem("isLoggedIn");
-
-    // If logged in, go straight to home page
-    if (isLoggedIn === "true") {
+    // If already logged in, skip login page
+    if (localStorage.getItem("isLoggedIn") === "true") {
         window.location.href = "index.html";
     }
 });
@@ -92,7 +89,6 @@ function loginSuccess(email, name) {
 
     window.location.href = "index.html";
 }
-</script>
 
 </script>
 
