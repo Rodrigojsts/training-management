@@ -139,12 +139,17 @@ document.addEventListener('DOMContentLoaded', function () {
     // Redirect if not logged in
     if (!localStorage.getItem("isLoggedIn")) {
         window.location.href = "index.html";
+        return; // Prevent further execution after redirect
     }
-    if (window.location.pathname !== 'index.tml') return;
+
+    // Ensure code only runs on index.html
+    if (window.location.pathname !== '/index.html') return;
+
     // Load training data
     loadTrainingData();
-	displayPendingUpdates();
+    displayPendingUpdates();
 });
+
 
 const updatesContainer = document.querySelector('.pending-updates');
 updatesContainer.innerHTML = "<p>Update 1: Training updated.</p>";
