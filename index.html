@@ -137,10 +137,11 @@ let storedTrainings = JSON.parse(localStorage.getItem('trainings')) || [];
 // Ensure this code runs once the DOM is fully loaded
 document.addEventListener('DOMContentLoaded', function () {
     // Redirect if not logged in
-    if (!localStorage.getItem("isLoggedIn")) {
-        window.location.href = "index.html";
-        return; // Prevent further execution after redirect
-    }
+if (localStorage.getItem("isLoggedIn") !== "true") {
+    window.location.href = "login.html"; // or your actual login page
+    return;
+}
+
 
     // Ensure code only runs on index.html
     if (window.location.pathname !== '/index.html') return;
