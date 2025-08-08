@@ -34,75 +34,66 @@
   </div>
 
 <script>
-// Initialize localStorage variables
-localStorage.setItem("isLoggedIn", localStorage.getItem("isLoggedIn") || "false");
-localStorage.setItem("loggedInEmail", localStorage.getItem("loggedInEmail") || "");
-localStorage.setItem("loggedInName", localStorage.getItem("loggedInName") || "");
+<script>
+// Initialize localStorage variables only if not already set
+if (localStorage.getItem("isLoggedIn") === null) {
+    localStorage.setItem("isLoggedIn", "false");
+}
+if (localStorage.getItem("loggedInEmail") === null) {
+    localStorage.setItem("loggedInEmail", "");
+}
+if (localStorage.getItem("loggedInName") === null) {
+    localStorage.setItem("loggedInName", "");
+}
 
 document.addEventListener('DOMContentLoaded', function () {
-    // Check if the user is logged in on page load
-    if (localStorage.getItem("isLoggedIn") === "true") {
-        // If logged in, redirect to the home page
+    const isLoggedIn = localStorage.getItem("isLoggedIn");
+
+    // If logged in, go straight to home page
+    if (isLoggedIn === "true") {
         window.location.href = "index.html";
-    };
-	if (localStorage.getItem("isLoggedIn") === "false") {
-        // If logged in, redirect to the home page
-        window.location.href = "login.html";
     }
 });
 
 function validateLogin() {
-    const username = document.getElementById('username').value.trim().toLowerCase(); // Trim whitespace and lowercase
-    const password = document.getElementById('password').value.trim(); // Trim whitespace
+    const username = document.getElementById('username').value.trim().toLowerCase();
+    const password = document.getElementById('password').value.trim();
 
-    // Retrieve trainerStorage from localStorage or initialize it
     let trainerStorage = JSON.parse(localStorage.getItem("trainerStorage")) || [];
-    console.log("trainerStorage:", trainerStorage); // Log trainerStorage content for debugging
+    console.log("trainerStorage:", trainerStorage);
 
-    // Check for the Master Trainer first (email: 'trainer@esky.com', password: 'TEST')
+    // Master Trainer login
     if (username === "trainer@esky.com" && password === "TEST") {
-        // Master Trainer login is successful
-        localStorage.setItem("isLoggedIn", "true");
-        localStorage.setItem("loggedInEmail", username);
-        localStorage.setItem("loggedInName", "Master Trainer");
-
-        console.log("loggedInEmail =", username);
-        console.log("loggedInName =", "Master Trainer");
-
+        loginSuccess(username, "Master Trainer");
         alert("Logged in as Master Trainer");
-
-        // Redirect to the home page for Master Trainer
-        window.location.href = "index.html"; // Adjust the redirect URL as necessary
-        return false; // Prevent form submission
-    }
-
-    // Otherwise, check trainerStorage for other users
-    const user = trainerStorage.find(user => user.email.toLowerCase().trim() === username); // Trim and lowercase email
-    console.log("user found:", user); // Log the user found for debugging
-
-    if (user) {
-        // Check if the password matches the user's password
-        if (user.password.trim() === password) {
-            // Login is successful for the found user
-            localStorage.setItem("isLoggedIn", "true");
-            localStorage.setItem("loggedInEmail", username);
-            localStorage.setItem("loggedInName", user.name);
-
-            console.log("loggedInEmail =", username);
-            console.log("loggedInName =", user.name);
-
-            // Redirect to the home page for other trainers
-            window.location.href = "index.html"; // Adjust the redirect URL as necessary
-            return false; // Prevent form submission
-        } else {
-            alert("Invalid username or password!");
-            return false;
-        }
-    } else {
-        alert("Invalid username or password!");
         return false;
     }
+
+    // Check stored trainers
+    const user = trainerStorage.find(user => user.email.trim().toLowerCase() === username);
+    console.log("user found:", user);
+
+    if (user && user.password.trim() === password) {
+        loginSuccess(username, user.name);
+        return false;
+    }
+
+    alert("Invalid username or password!");
+    return false;
 }
+
+function loginSuccess(email, name) {
+    localStorage.setItem("isLoggedIn", "true");
+    localStorage.setItem("loggedInEmail", email);
+    localStorage.setItem("loggedInName", name);
+
+    console.log("loggedInEmail =", email);
+    console.log("loggedInName =", name);
+
+    window.location.href = "index.html";
+}
+</script>
+
 </script>
 
 
