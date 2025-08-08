@@ -139,9 +139,9 @@ let storedTrainings = JSON.parse(localStorage.getItem('trainings')) || [];
 document.addEventListener('DOMContentLoaded', function () {
     // Redirect if not logged in
     if (!localStorage.getItem("isLoggedIn")) {
-        window.location.href = "file:///C:/Users/r.santos/Documents/TMS/home-page.html";
+        window.location.href = "index.html";
     }
-    if (window.location.pathname !== '/C:/Users/r.santos/Documents/TMS/home-page.html') return;
+    if (window.location.pathname !== 'index.tml') return;
     // Load training data
     loadTrainingData();
 	displayPendingUpdates();
@@ -432,9 +432,9 @@ function displaySearchResults(users) {
 document.addEventListener('DOMContentLoaded', function () {
     // Redirect if not logged in
     if (!localStorage.getItem("isLoggedIn")) {
-        window.location.href = "file:///C:/Users/r.santos/Documents/TMS/home-page.html";
+        window.location.href = "index.html";
     }
-    if (window.location.pathname !== '/C:/Users/r.santos/Documents/TMS/home-page.html') return;
+    if (window.location.pathname !== 'index.html') return;
 
     // Display logged-in user's name
     displayLoggedInUser();
