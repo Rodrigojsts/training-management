@@ -428,21 +428,6 @@ function displaySearchResults(users) {
     }
 }
 
-// Ensure this code runs once the DOM is fully loaded
-document.addEventListener('DOMContentLoaded', function () {
-    // Redirect if not logged in
-    if (!localStorage.getItem("isLoggedIn")) {
-        window.location.href = "index.html";
-    }
-    if (window.location.pathname !== 'login.html') return;
-
-    // Display logged-in user's name
-    displayLoggedInUser();
-
-    // Load training data
-    loadTrainingData();
-});
-
 // Function to display the logged-in user's name
 function displayLoggedInUser() {
     const userNameDiv = document.querySelector('.user-name');
