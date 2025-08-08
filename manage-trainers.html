@@ -303,11 +303,13 @@ async function handleExcelImport(event) {
         });
 
         await saveTrainerStorage(trainerStorage);
+        trainerStorage = await loadTrainerStorage(); // <-- reload from blob
         populateTable();
     };
 
     reader.readAsBinaryString(file);
 }
+
 
 /*** Initialization ***/
 document.addEventListener("DOMContentLoaded", async function () {
