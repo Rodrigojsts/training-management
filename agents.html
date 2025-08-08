@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+	<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Training Management System - TMS</title>
+		<link rel="stylesheet" href="trainingmanagement.csss">
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+		<script src="tms.js"></script>
+		<link rel="icon" href="file:///C:Users\r.santos\Documents\TMS\/images/favicon.png" type="image/png">
+	</head>
+	<body>
+<header>
+    <div class="container">
+        <h1>Training Management System</h1>
+    </div>
+    <!-- Header Menu (Home icon and Burger menu on the same line) -->
+    <div class="header-menu">
+        <!-- Home Icon Button -->
+        <a href="file:///C:\Users\r.santos\Documents\TMS\home-page.html">
+            <button class="home-button">
+                <i class="fas fa-home"></i> <!-- Font Awesome Home Icon -->
+            </button>
+        </a>
+        <!-- Burger Menu -->
+        <div class="burger-menu">
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+    </div>
+</header>
+
+<!-- Hidden Menu Content -->
+<div class="burger-menu-content">
+    <!-- User Token -->
+    <div class="user-token">John Doe</div> <!-- You can dynamically change "John Doe" to the user's name -->
+    
+    <h3>Training Materials</h3>
+    <ul class="sub-menu">
+        <li><a href="file:///C:\Users\r.santos\Documents\TMS\materials.html">Material</a></li>
+        <li><a href="file:///C:\Users\r.santos\Documents\TMS\certification.html">Certifications</a></li>
+        <li><a href="file:///C:\Users\r.santos\Documents\TMS\evaluation-questionnaire.html">Evaluation questionnaire</a></li>
+        <li><a href="file:///C:\Users\r.santos\Documents\TMS\dailyTrainingReport.html">Daily Training Report</a></li>
+    </ul>
+    
+    <h3>Training Preparation</h3>
+    <ul class="sub-menu">
+        <li><a href="file:///C:\Users\r.santos\Documents\TMS\training-slots.html">Create Training Slots</a></li>
+        <li><a href="file:///C:\Users\r.santos\Documents\TMS\tlSlots.html">Assign to Training</a></li>
+        <li><a href="file:///C:\Users\r.santos\Documents\TMS\training-plan.html">Training Plan</a></li>
+        <li><a href="file:///C:\Users\r.santos\Documents\TMS\schedule.html">Schedule</a></li>
+    </ul>
+    
+    <h3>Accounts</h3>
+    <ul class="sub-menu">
+        <li><a href="file:///C:\Users\r.santos\Documents\TMS\manage-trainers.html">Manage Trainer's account</a></li>
+        <li><a href="file:///C:\Users\r.santos\Documents\TMS\agents.html">Manage Agents</a></li>
+    </ul>
+    <button class="logout" onclick="logout()">Logout</button>
+</div>
+
+<div class="site-content">	
+<h3 class="page-name">Agents' Skills</h3>	
+<main>
+<div class="dropdown">
+  <input type="text" placeholder="Select Option" readonly>
+  <div class="dropdown_hub_list">
+    <a href="#">eSky</a>
+    <a href="#">Thomas Cook</a>
+    <a href="#">Coforge</a>
+    <a href="#">IGT</a
+	<a href="#">+</a>
+  </div>
+</div>
+    <table class="agents_skills" border="1">
+    <thead>
+        <tr>
+            <th>Agent's Name</th>
+            <th>Market</th>
+            <th>Email</th>
+            <th>Basic</th>
+            <th>Advance</th>
+            <th>Actions</th> <!-- New column for the buttons -->
+        </tr>
+        <tr>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th class="advance-skills">Amadeus</th>
+            <th class="advance-skills">TEST</th>
+
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr class="agent-row">
+            <td class="name">John Doe</td>
+            <td class="market">US Market</td>
+            <td class="email">johndoe@example.com</td>
+            <td class="advance-skills">Yes</td>
+			<td></td>
+            <td><button class="edit-button">Edit</button></td> <!-- Edit button -->
+        </tr>
+        <tr class="agent-row">
+            <td class="name">Jane Smith</td>
+            <td class="market">UK Market</td>
+            <td class="email">janesmith@example.com</td>
+            <td class="advance-skills">No</td>	
+			<td></td>			
+            <td><button class="edit-button">Edit</button></td> <!-- Edit button -->
+        </tr>
+        <tr class="agent-row">
+            <td class="name">Tom Brown</td>
+            <td class="market">EU Market</td>
+            <td class="email">tombrown@example.com</td>
+            <td class="advance-skills">Yes</td>
+            <td class="basic-skills">Yes</td>
+            <td><button class="edit-button">Edit</button></td> <!-- Edit button -->
+        </tr>
+    </tbody>
+</table>
+
+</main>
+</div>
+<script>
+    // DOM Content Loaded Events
+    document.addEventListener('DOMContentLoaded', function () {
+        // Redirect if not logged in
+        if (!localStorage.getItem("isLoggedIn")) {
+            window.location.href = "login.html";
+        }
+        // Load training data
+        loadTrainingData();
+    });
+	
+
+// Select all the edit buttons
+const editButtons = document.querySelectorAll('.edit-button');
+
+// Function to enable editing mode for a specific agent
+editButtons.forEach((button, index) => {
+    button.addEventListener('click', () => {
+        const row = button.closest('tr');
+        const nameCell = row.querySelector('.name');
+        const marketCell = row.querySelector('.market');
+        const emailCell = row.querySelector('.email');
+        const skillsCell = row.querySelector('.skills');
+
+        // Create input fields with the current values
+        nameCell.innerHTML = `<input type="text" value="${nameCell.innerText}" />`;
+        marketCell.innerHTML = `<input type="text" value="${marketCell.innerText}" />`;
+        emailCell.innerHTML = `<input type="email" value="${emailCell.innerText}" />`;
+        skillsCell.innerHTML = `<input type="text" value="${skillsCell.innerText}" />`;
+
+        // Change the Edit button to an Update button
+        button.innerHTML = 'Update';
+        button.classList.remove('edit-button');
+        button.classList.add('update-button');
+        
+        // Update the button to save changes
+        button.addEventListener('click', () => {
+            const updatedName = nameCell.querySelector('input').value;
+            const updatedMarket = marketCell.querySelector('input').value;
+            const updatedEmail = emailCell.querySelector('input').value;
+            const updatedSkills = skillsCell.querySelector('input').value;
+
+            // Save updated values back to the table
+            nameCell.innerHTML = updatedName;
+            marketCell.innerHTML = updatedMarket;
+            emailCell.innerHTML = updatedEmail;
+            skillsCell.innerHTML = updatedSkills;
+
+            // Change Update button back to Edit
+            button.innerHTML = 'Edit';
+            button.classList.remove('update-button');
+            button.classList.add('edit-button');
+        });
+    });
+});
+</script>
+
+</body>
+</html>
