@@ -123,62 +123,75 @@
 
 </main>
 </div>
-<script>
-    // DOM Content Loaded Events
-    document.addEventListener('DOMContentLoaded', function () {
-        // Redirect if not logged in
+<script type="module">
+    import { put } from "https://esm.sh/@vercel/blob";
+
+    document.addEventListener('DOMContentLoaded', async function () {
         if (!localStorage.getItem("isLoggedIn")) {
             window.location.href = "login.html";
+            return;
         }
-        // Load training data
         loadTrainingData();
+        enableEditButtons();
     });
-	
 
-// Select all the edit buttons
-const editButtons = document.querySelectorAll('.edit-button');
+    function enableEditButtons() {
+        const editButtons = document.querySelectorAll('.edit-button');
 
-// Function to enable editing mode for a specific agent
-editButtons.forEach((button, index) => {
-    button.addEventListener('click', () => {
-        const row = button.closest('tr');
-        const nameCell = row.querySelector('.name');
-        const marketCell = row.querySelector('.market');
-        const emailCell = row.querySelector('.email');
-        const skillsCell = row.querySelector('.skills');
+        editButtons.forEach((button) => {
+            button.addEventListener('click', () => {
+                const row = button.closest('tr');
+                const nameCell = row.querySelector('.name');
+                const marketCell = row.querySelector('.market');
+                const emailCell = row.querySelector('.email');
+                const skillsCell = row.querySelector('.skills');
 
-        // Create input fields with the current values
-        nameCell.innerHTML = `<input type="text" value="${nameCell.innerText}" />`;
-        marketCell.innerHTML = `<input type="text" value="${marketCell.innerText}" />`;
-        emailCell.innerHTML = `<input type="email" value="${emailCell.innerText}" />`;
-        skillsCell.innerHTML = `<input type="text" value="${skillsCell.innerText}" />`;
+                // Turn cells into inputs
+                nameCell.innerHTML = `<input type="text" value="${nameCell.innerText}" />`;
+                marketCell.innerHTML = `<input type="text" value="${marketCell.innerText}" />`;
+                emailCell.innerHTML = `<input type="email" value="${emailCell.innerText}" />`;
+                skillsCell.innerHTML = `<input type="text" value="${skillsCell.innerText}" />`;
 
-        // Change the Edit button to an Update button
-        button.innerHTML = 'Update';
-        button.classList.remove('edit-button');
-        button.classList.add('update-button');
-        
-        // Update the button to save changes
-        button.addEventListener('click', () => {
-            const updatedName = nameCell.querySelector('input').value;
-            const updatedMarket = marketCell.querySelector('input').value;
-            const updatedEmail = emailCell.querySelector('input').value;
-            const updatedSkills = skillsCell.querySelector('input').value;
+                // Change button to Update
+                button.innerHTML = 'Update';
+                button.classList.remove('edit-button');
+                button.classList.add('update-button');
 
-            // Save updated values back to the table
-            nameCell.innerHTML = updatedName;
-            marketCell.innerHTML = updatedMarket;
-            emailCell.innerHTML = updatedEmail;
-            skillsCell.innerHTML = updatedSkills;
+                button.onclick = async () => {
+                    const updatedData = {
+                        name: nameCell.querySelector('input').value,
+                        market: marketCell.querySelector('input').value,
+                        email: emailCell.querySelector('input').value,
+                        skills: skillsCell.querySelector('input').value
+                    };
 
-            // Change Update button back to Edit
-            button.innerHTML = 'Edit';
-            button.classList.remove('update-button');
-            button.classList.add('edit-button');
+                    // Save updated values back to table
+                    nameCell.innerHTML = updatedData.name;
+                    marketCell.innerHTML = updatedData.market;
+                    emailCell.innerHTML = updatedData.email;
+                    skillsCell.innerHTML = updatedData.skills;
+
+                    // Upload to Vercel Blob (as JSON)
+                    try {
+                        const blobName = `agents/${updatedData.name}.json`;
+                        const { url } = await put(blobName, JSON.stringify(updatedData), { access: 'public' });
+                        console.log("Data saved to:", url);
+                    } catch (err) {
+                        console.error("Failed to save to Vercel Blob:", err);
+                    }
+
+                    // Change back to Edit
+                    button.innerHTML = 'Edit';
+                    button.classList.remove('update-button');
+                    button.classList.add('edit-button');
+
+                    enableEditButtons(); // Rebind events
+                };
+            });
         });
-    });
-});
+    }
 </script>
+
 
 </body>
 </html>
