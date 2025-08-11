@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TMS - Daily Training Reports</title>
+	<link rel="stylesheet" href="file:///C:Users\r.santos\Documents\TMS\style\trainingManagement.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+	<script src="file:///C:Users\r.santos\Documents\TMS\script\trainingScript.js"></script>
+	<link rel="icon" href="file:///C:Users\r.santos\Documents\TMS\/images/favicon.png" type="image/png">
+</head>
+<body>
+
+<header>
+    <div class="container">
+        <h1>Training Management System</h1>
+    </div>
+    
+    <!-- Header Menu (Home icon and Burger menu on the same line) -->
+    <div class="header-menu">
+        <!-- Home Icon Button -->
+	<a href="file:///C:\Users\r.santos\Documents\TMS\home-page.html">
+		<button class="home-button">
+			<i class="fas fa-home"></i> <!-- Font Awesome Home Icon -->
+		</button>
+	</a>
+
+        <!-- Burger Menu -->
+        <div class="burger-menu">
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+    </div>
+</header>
+	 <!-- Hidden Menu Content -->
+		<div class="burger-menu-content">
+			<h3>Training Materials</h3>
+			<ul class="sub-menu">
+				<li><a href="file:///C:\Users\r.santos\Documents\TMS\materials.html">Material</a></li>
+				<li><a href="file:///C:\Users\r.santos\Documents\TMS\certification.html">Certifications</a></li>
+				<li><a href="file:///C:\Users\r.santos\Documents\TMS\evaluation-questionnaire.html">Evaluation questionnaire</a></li>
+				<li><a href="file:///C:\Users\r.santos\Documents\TMS\dailyTrainingReport.html">Daily Training Report</a></li>				
+			</ul>
+			
+			<h3>Training Preparation</h3>
+			<ul class="sub-menu">
+				<li><a href="file:///C:\Users\r.santos\Documents\TMS\training-slots.html">Create Training Slots</a></li>
+				<li><a href="file:///C:\Users\r.santos\Documents\TMS\tlSlots.html">Assign to Training</a></li>
+				<li><a href="file:///C:\Users\r.santos\Documents\TMS\training-plan.html">Training Plan</a></li>
+				<li><a href="file:///C:\Users\r.santos\Documents\TMS\schedule.html">Schedule</a></li>				
+			</ul>
+			
+			<h3>Accounts</h3>
+			<ul class="sub-menu">
+				<li><a href="file:///C:\Users\r.santos\Documents\TMS\manage-trainers.html">Manage Trainer's account</a></li>
+				<li><a href="file:///C:\Users\r.santos\Documents\TMS\agents.html">Manage Agents</a></li>				
+			</ul>
+			<button class="logout" onclick="logout()">Logout</Button>
+		</div>
+<div class="site-content">
+	<h3 class="page-name">Daily Training Reports</h3>	
+    <main>
+	<div class="wrap-center">
+    <div class="form-container">
+        <h2>DTR</h2>
+        <form action="#" method="post">
+		
+			<label for="trainer">Trainer:</label>
+            <select id="trainer" name="trainer" required>
+                        <!-- Options will be dynamically populated -->
+                    </select>
+			
+            <label for="training-name">Training Name:</label>
+            <input type="text" id="training-name" name="training-name" required>
+
+            <label for="absent">Absent:</label>
+            <input type="checkbox" id="absent" name="absent">
+
+            <label for="month">Month:</label>
+            <input type="text" id="month" name="month" required>
+
+            <label for="starting-date">Starting Date (DD/MM/YYYY):</label>
+            <input type="date" id="starting-date" name="starting-date" required>
+
+            <label for="starting-time">Starting Time:</label>
+            <input type="time" id="starting-time" name="starting-time" required>
+
+            <label for="ending-time">Ending Time:</label>
+            <input type="time" id="ending-time" name="ending-time" required>
+
+            <label for="trainee-name">Trainee Name:</label>
+            <input type="text" id="trainee-name" name="trainee-name" required>
+
+            <label for="test-score">Test Score:</label>
+            <input type="number" id="test-score" name="test-score" min="0" max="100" required>
+
+            <label for="emails">Email:</label>
+            <input type="email" id="emails" name="emails" required>
+
+            <label for="trainee-behaviour">Trainee Behaviour/Proactivity:</label>
+            <textarea id="trainee-behaviour" name="trainee-behaviour" required></textarea>
+
+            <label for="what-went-good">What Went Good:</label>
+            <textarea id="what-went-good" name="what-went-good" required></textarea>
+
+            <label for="what-went-bad">What Went Bad:</label>
+            <textarea id="what-went-bad" name="what-went-bad" required></textarea>
+
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+</div>
+    </main>
+    </div>
+<script>
+    // DOM Content Loaded Events
+    document.addEventListener('DOMContentLoaded', function () {
+        // Redirect if not logged in
+        if (!localStorage.getItem("isLoggedIn")) {
+            window.location.href = "login.html";
+        }
+        
+        // Load training data
+        populateTableFromLocalStorage(); // Replace loadTrainingData with the correct function
+
+        // Populate the training name dropdown
+        populateTrainingNameDropdown();
+    });
+
+    // Function to populate the "Training Name" dropdown
+    function populateTrainingNameDropdown() {
+        const trainerNameDropdown = document.getElementById('trainer');
+        const trainerStorage = JSON.parse(localStorage.getItem('trainerStorage')) || [];
+        
+        // Clear existing options
+        trainerNameDropdown.innerHTML = '<option value="" disabled selected>Select  trainer</option>';
+
+        // Populate dropdown with trainer names
+        trainerStorage.forEach(trainer => {
+            const option = document.createElement('option');
+            option.value = trainer.name;
+            option.textContent = trainer.name;
+            trainerNameDropdown.appendChild(option);
+        });
+    }
+</script>
+</body>
+</html>

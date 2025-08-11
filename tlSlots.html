@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+	<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>TMS - Training Availability</title>
+		<link rel="stylesheet" href="file:///C:Users\r.santos\Documents\TMS\style\trainingManagement.css">
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+				<script src="file:///C:Users\r.santos\Documents\TMS\script\trainingScript.js"></script>
+				<link rel="icon" href="file:///C:Users\r.santos\Documents\TMS\/images/favicon.png" type="image/png">
+		
+	</head>
+	
+	<body>
+		<header>
+			<div class="container">
+				<h1>Training Management System</h1>
+			</div>
+			<!-- Header Menu (Home icon and Burger menu on the same line) -->
+			<div class="header-menu">
+				<!-- Home Icon Button -->
+			<a href="file:///C:\Users\r.santos\Documents\TMS\home-page.html">
+				<button class="home-button">
+					<i class="fas fa-home"></i> <!-- Font Awesome Home Icon -->
+				</button>
+			</a>
+				<!-- Burger Menu -->
+				<div class="burger-menu">
+					<div></div>
+					<div></div>
+					<div></div>
+				</div>
+			</div>
+		</header>
+		 <!-- Hidden Menu Content -->
+		<div class="burger-menu-content">
+			<h3>Training Materials</h3>
+			<ul class="sub-menu">
+				<li><a href="file:///C:\Users\r.santos\Documents\TMS\materials.html">Material</a></li>
+				<li><a href="file:///C:\Users\r.santos\Documents\TMS\certification.html">Certifications</a></li>
+				<li><a href="file:///C:\Users\r.santos\Documents\TMS\evaluation-questionnaire.html">Evaluation questionnaire</a></li>
+				<li><a href="file:///C:\Users\r.santos\Documents\TMS\dailyTrainingReport.html">Daily Training Report</a></li>				
+			</ul>
+			
+			<h3>Training Preparation</h3>
+			<ul class="sub-menu">
+				<li><a href="file:///C:\Users\r.santos\Documents\TMS\training-slots.html">Create Training Slots</a></li>
+				<li><a href="file:///C:\Users\r.santos\Documents\TMS\tlSlots.html">Assign to Training</a></li>
+				<li><a href="file:///C:\Users\r.santos\Documents\TMS\training-plan.html">Training Plan</a></li>
+				<li><a href="file:///C:\Users\r.santos\Documents\TMS\schedule.html">Schedule</a></li>				
+			</ul>
+			
+			<h3>Accounts</h3>
+			<ul class="sub-menu">
+				<li><a href="file:///C:\Users\r.santos\Documents\TMS\manage-trainers.html">Manage Trainer's account</a></li>
+				<li><a href="file:///C:\Users\r.santos\Documents\TMS\agents.html">Manage Agents</a></li>				
+			</ul>
+			<button class="logout" onclick="logout()">Logout</Button>
+		</div>
+		<div class="site-content">
+			<main>
+				<!-- Rest of your content here -->
+				<div class="container">
+
+				</div>
+					<!-- Main Content Area (Search Results & Person Details) -->
+<div class="content-slots">
+    <h3 class="page-name">Available Trainings</h3>
+    <div class="training-slots">
+        <div class="filter-options">
+		<h4>Filters</h4>
+    <select id="filter-trainer">
+        <option value="">Filter by Trainer Name</option>
+    </select>
+    <select id="filter-training-name">
+        <option value="">Filter by Training Name</option>
+    </select>
+    <input type="date" id="filter-start-date" placeholder="Filter by Start Date" />
+    <button id="apply-filter">Apply Filter</button>
+    <button id="clear-filter">Clear Filter</button>
+</div>
+<h4>Results:</h4>
+        <div class="training-Details"></div>
+    </div>
+</div>
+
+				</div>
+			
+
+				
+			</main>
+		</div>
+		<script>
+		localStorage.setItem('trainings', JSON.stringify(storedData));
+		
+
+		
+		document.addEventListener('DOMContentLoaded', function () {
+    // Load training data and setup filters
+    loadTrainingData();
+    populateFilterDropdowns();
+
+    // Add event listeners for filter buttons
+    document.getElementById('apply-filter').addEventListener('click', applyFilter);
+    document.getElementById('clear-filter').addEventListener('click', clearFilter);
+
+    // Listen for changes on Trainer dropdown to update the Training Name dropdown
+    document.getElementById('filter-trainer').addEventListener('change', updateTrainingNames);
+
+    // Listen for changes on Training Name dropdown to update the Trainer Name dropdown
+    document.getElementById('filter-training-name').addEventListener('change', updateTrainers);
+});
+
+// Populate dropdowns with unique Trainer Names and Training Names
+function populateFilterDropdowns() {
+    const storedData = JSON.parse(localStorage.getItem('trainings')) || [];
+    const trainerDropdown = document.getElementById('filter-trainer');
+    const trainingNameDropdown = document.getElementById('filter-training-name');
+
+    // Clear existing options
+    trainerDropdown.innerHTML = `<option value="">Filter by Trainer Name</option>`;
+    trainingNameDropdown.innerHTML = `<option value="">Filter by Training Name</option>`;
+
+    // Get unique values for trainers and training names
+    const trainers = [...new Set(storedData.map(training => training.trainer))];
+    const trainingNames = [...new Set(storedData.map(training => training.trainingName))];
+
+    // Populate Trainer dropdown
+    trainers.forEach(trainer => {
+        const option = document.createElement('option');
+        option.value = trainer;
+        option.textContent = trainer;
+        trainerDropdown.appendChild(option);
+    });
+
+    // Populate Training Name dropdown
+    trainingNames.forEach(trainingName => {
+        const option = document.createElement('option');
+        option.value = trainingName;
+        option.textContent = trainingName;
+        trainingNameDropdown.appendChild(option);
+    });
+}
+
+// Update the Training Name dropdown based on selected Trainer
+function updateTrainingNames() {
+    const trainerFilter = document.getElementById('filter-trainer').value;
+    const storedData = JSON.parse(localStorage.getItem('trainings')) || [];
+    const trainingNameDropdown = document.getElementById('filter-training-name');
+
+    // Save the current value of the Training Name dropdown before clearing it
+    const selectedTrainingName = trainingNameDropdown.value;
+
+    // Clear existing options
+    trainingNameDropdown.innerHTML = `<option value="">Filter by Training Name</option>`;
+
+    // If a trainer is selected, update the training names dropdown to show only relevant trainings
+    if (trainerFilter) {
+        const filteredTrainings = storedData.filter(training => training.trainer === trainerFilter);
+        const trainingNames = [...new Set(filteredTrainings.map(training => training.trainingName))];
+
+        trainingNames.forEach(trainingName => {
+            const option = document.createElement('option');
+            option.value = trainingName;
+            option.textContent = trainingName;
+            trainingNameDropdown.appendChild(option);
+        });
+    } else {
+        // If no trainer is selected, show all training names
+        populateFilterDropdowns();
+    }
+
+    // Restore the previously selected training name, if possible
+    if (selectedTrainingName) {
+        trainingNameDropdown.value = selectedTrainingName;
+    }
+}
+
+// Update the Trainer Name dropdown based on selected Training Name
+function updateTrainers() {
+    const trainingNameFilter = document.getElementById('filter-training-name').value;
+    const storedData = JSON.parse(localStorage.getItem('trainings')) || [];
+    const trainerDropdown = document.getElementById('filter-trainer');
+
+    // Save the current value of the Trainer dropdown before clearing it
+    const selectedTrainer = trainerDropdown.value;
+
+    // Clear existing options
+    trainerDropdown.innerHTML = `<option value="">Filter by Trainer Name</option>`;
+
+    // If a training name is selected, update the trainer dropdown to show only relevant trainers
+    if (trainingNameFilter) {
+        const filteredTrainings = storedData.filter(training => training.trainingName === trainingNameFilter);
+        const trainers = [...new Set(filteredTrainings.map(training => training.trainer))];
+
+        trainers.forEach(trainer => {
+            const option = document.createElement('option');
+            option.value = trainer;
+            option.textContent = trainer;
+            trainerDropdown.appendChild(option);
+        });
+    } else {
+        // If no training name is selected, show all trainers
+        populateFilterDropdowns();
+    }
+
+    // Restore the previously selected trainer, if possible
+    if (selectedTrainer) {
+        trainerDropdown.value = selectedTrainer;
+    }
+}
+
+// Filter training data based on dropdown and date inputs
+function applyFilter() {
+    const trainerFilter = document.getElementById('filter-trainer').value;
+    const trainingNameFilter = document.getElementById('filter-training-name').value;
+    const startDateFilter = document.getElementById('filter-start-date').value;
+
+    const storedData = JSON.parse(localStorage.getItem('trainings')) || [];
+    const filteredData = storedData.filter(training => {
+        const matchesTrainer = !trainerFilter || training.trainer === trainerFilter;
+        const matchesTrainingName = !trainingNameFilter || training.trainingName === trainingNameFilter;
+        const matchesStartDate = !startDateFilter || training.startDate === startDateFilter;
+        return matchesTrainer && matchesTrainingName && matchesStartDate;
+    });
+
+    displayTrainingData(filteredData);
+}
+
+// Clear filters and reload all training data
+function clearFilter() {
+    document.getElementById('filter-trainer').value = '';
+    document.getElementById('filter-training-name').value = '';
+    document.getElementById('filter-start-date').value = '';
+    
+    // Reload all training data
+    loadTrainingData();
+
+    // Repopulate dropdowns to show all available options
+    populateFilterDropdowns();
+}
+
+
+// Load and display all training data
+function loadTrainingData() {
+    const storedData = JSON.parse(localStorage.getItem('trainings')) || [];
+    displayTrainingData(storedData);
+
+    // Refresh dropdown options after loading data
+    populateFilterDropdowns();
+}
+
+// Display training data cards
+function displayTrainingData(data) {
+    const trainingSlots = document.querySelector('.training-Details');
+    trainingSlots.innerHTML = ''; // Clear previous data
+
+    if (data.length) {
+        data.forEach((training, index) => createTrainingCard(training, index));
+    } else {
+        trainingSlots.innerHTML = '<p>No training data available.</p>';
+    }
+}
+
+// Create a training card
+function createTrainingCard(training, index) {
+    const trainingCard = document.createElement('div');
+    trainingCard.classList.add('training-card');
+    trainingCard.style.cssText = `
+        border: 1px solid #e1076a;
+        padding: 20px;
+        border-radius: 10px;
+        background-color: #fff;
+        font-family: Arial, sans-serif;
+        color: #333;
+    `;
+
+    const trainingInfo = document.createElement('div');
+    trainingInfo.classList.add('training-info');
+    trainingInfo.innerHTML = `
+        <h3 style="background-color: #e1076a; color: white; padding: 10px; text-align: center; border-radius: 5px;">Training Information</h3>
+        <div><strong>Trainer:</strong> ${training.trainer}</div>
+        <div><strong>Training Name:</strong> ${training.trainingName}</div>
+        <div><strong>Training Start Date:</strong> ${training.startDate}</div>
+        <div><strong>Training End Date:</strong> ${training.endDate}</div>
+        <div><strong>Training Start Time [CET]:</strong> ${training.startTime}</div>
+        <div><strong>Training End Time [CET]:</strong> ${training.endTime}</div>
+    `;
+
+    trainingCard.appendChild(trainingInfo);
+
+    const trainingSlots = document.querySelector('.training-Details');
+    trainingSlots.appendChild(trainingCard);
+}
+
+
+// Create Training Card
+function createTrainingCard(training, index) {
+    const trainingCard = document.createElement('div');
+    trainingCard.classList.add('training-card');
+    trainingCard.style.cssText = `
+        border: 1px solid #e1076a;
+        padding: 15px;
+        border-radius: 8px;
+        background-color: #fff;
+        width: 400px;
+        font-family: 'Arial', sans-serif;
+        color: #333;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        height: 600px; /* Fix height to keep the buttons at the bottom */
+        transition: transform 0.3s ease-in-out;
+    `;
+    trainingCard.addEventListener('mouseenter', () => trainingCard.style.transform = 'scale(1.05)');
+    trainingCard.addEventListener('mouseleave', () => trainingCard.style.transform = 'scale(1)');
+
+    const trainingInfo = document.createElement('div');
+    trainingInfo.classList.add('training-info');
+    trainingInfo.style.cssText = `
+        flex: 1;
+        overflow-y: auto;
+        padding-bottom: 50px; /* To give space for buttons */
+    `;
+
+    const fixedInfo = document.createElement('div');
+    fixedInfo.style.cssText = `
+    position: sticky;
+    top: 0; /* Default, adjust as needed */
+    z-index: 5; /* Lower z-index to avoid overlap with the burger menu */
+    padding: 10px;
+    background-color: #fff;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e1076a;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    `;
+    fixedInfo.innerHTML = `
+        <h3 style="background-color: #e1076a; color: white; padding: 12px; text-align: center; border-radius: 5px; font-size: 1.1em; margin-bottom: 10px;">Training Information</h3>
+        <div><strong>Trainer:</strong> ${training.trainer}</div>
+        <div><strong>Training Name:</strong> ${training.trainingName}</div>
+        <div><strong>Start Date:</strong> ${training.startDate}</div>
+        <div><strong>End Date:</strong> ${training.endDate}</div>
+        <div><strong>Start Time [CET]:</strong> ${training.startTime}</div>
+        <div><strong>End Time [CET]:</strong> ${training.endTime}</div>
+		<div><strong>Language:</strong> ${training.language}</div>
+    `;
+
+    const slotsContainer = document.createElement('div');
+    slotsContainer.innerHTML = `<strong>Slots:</strong>`;
+    const slotInputs = document.createElement('div');
+    slotInputs.classList.add('slot-inputs');
+
+    const savedSlots = training.slotDetails || [];
+    const totalSlots = Math.max(savedSlots.length, training.slots || 0);
+
+    for (let i = 0; i < totalSlots; i++) {
+        const slotValue = savedSlots[i] || '';
+        const inputContainer = document.createElement('div');
+
+        if (slotValue) {
+            inputContainer.textContent = slotValue;
+            inputContainer.classList.add('saved-slot');
+        } else {
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.placeholder = `Agent ${i + 1}`;
+            input.style.cssText = 'margin: 5px 0; width: 100%; padding: 6px; border-radius: 5px; border: 1px solid #ddd;';
+            inputContainer.appendChild(input);
+            inputContainer.classList.add('editable-slot');
+        }
+
+        slotInputs.appendChild(inputContainer);
+    }
+
+    slotsContainer.appendChild(slotInputs);
+    trainingInfo.appendChild(fixedInfo); // Append fixed section
+    trainingInfo.appendChild(slotsContainer);
+
+    const buttons = createTrainingButtons(index, training, slotInputs);
+    trainingInfo.append(...buttons);
+    trainingCard.appendChild(trainingInfo);
+
+    const trainingSlots = document.querySelector('.training-Details');
+    trainingSlots.appendChild(trainingCard);
+}
+
+// Create Buttons for Training Card
+function createTrainingButtons(index, training, slotInputs) {
+    const buttonContainer = document.createElement('div');
+    buttonContainer.style.cssText = `
+        display: flex;
+        justify-content: space-between;
+        padding-top: 10px;
+    `;
+    
+    const editButton = createButton('Edit', '#ffc107');
+    const addButton = createButton('Add', '#e1076a');
+    const saveButton = createButton('Save', '#28a745', true);
+    const cancelButton = createButton('Cancel', '#dc3545', true);
+
+    editButton.addEventListener('click', () => toggleEditState(slotInputs, editButton, addButton, saveButton, cancelButton));
+    saveButton.addEventListener('click', () => saveSlots(index, training, slotInputs));
+    addButton.addEventListener('click', () => addSlots(index, training, slotInputs));
+    cancelButton.addEventListener('click', loadTrainingData);
+
+    buttonContainer.appendChild(editButton);
+    buttonContainer.appendChild(addButton);
+    buttonContainer.appendChild(saveButton);
+    buttonContainer.appendChild(cancelButton);
+
+    return [buttonContainer];
+}
+
+// Helper function to create buttons
+function createButton(text, color, disabled = false) {
+    const button = document.createElement('button');
+    button.textContent = text;
+    button.style.cssText = `
+        background-color: ${color};
+        color: white;
+        padding: 8px 15px;
+        margin: 5px;
+        border: none;
+        border-radius: 5px;
+        font-size: 0.9em;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    `;
+    if (disabled) {
+        button.disabled = true;
+        button.style.backgroundColor = '#ddd';
+        button.style.cursor = 'not-allowed';
+    }
+    button.addEventListener('mouseover', () => {
+        if (!button.disabled) {
+            button.style.backgroundColor = darkenColor(color);
+        }
+    });
+    button.addEventListener('mouseout', () => {
+        if (!button.disabled) {
+            button.style.backgroundColor = color;
+        }
+    });
+    return button;
+}
+
+// Function to darken button color on hover
+function darkenColor(color) {
+    const hexColor = color.replace('#', '');
+    const rgb = parseInt(hexColor, 16);
+    const r = (rgb >> 16) & 0xff;
+    const g = (rgb >>  8) & 0xff;
+    const b = (rgb >>  0) & 0xff;
+
+    return `rgb(${Math.max(r - 20, 0)}, ${Math.max(g - 20, 0)}, ${Math.max(b - 20, 0)})`;
+}
+
+
+
+// Helper function to create buttons
+function createButton(text, color, disabled = false) {
+    const button = document.createElement('button');
+    button.textContent = text;
+    button.style.cssText = `
+        background-color: ${color};
+        color: white;
+        padding: 8px 15px;
+        margin: 5px;
+        border: none;
+        border-radius: 5px;
+        font-size: 0.9em;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    `;
+    if (disabled) {
+        button.disabled = true;
+        button.style.backgroundColor = '#ddd';
+        button.style.cursor = 'not-allowed';
+    }
+    button.addEventListener('mouseover', () => {
+        if (!button.disabled) {
+            button.style.backgroundColor = darkenColor(color);
+        }
+    });
+    button.addEventListener('mouseout', () => {
+        if (!button.disabled) {
+            button.style.backgroundColor = color;
+        }
+    });
+    return button;
+}
+
+// Function to darken button color on hover
+function darkenColor(color) {
+    const hexColor = color.replace('#', '');
+    const rgb = parseInt(hexColor, 16);
+    const r = (rgb >> 16) & 0xff;
+    const g = (rgb >>  8) & 0xff;
+    const b = (rgb >>  0) & 0xff;
+
+    return `rgb(${Math.max(r - 20, 0)}, ${Math.max(g - 20, 0)}, ${Math.max(b - 20, 0)})`;
+}
+
+
+    function createButton(text, bgColor, hidden = false) {
+        const button = document.createElement('button');
+        button.textContent = text;
+        button.style.cssText = `
+            margin-top: 10px;
+            padding: 10px 20px;
+            background-color: ${bgColor};
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            ${hidden ? 'display: none;' : ''}
+        `;
+        return button;
+    }
+
+    function toggleEditState(slotInputs, editButton, addButton, saveButton, cancelButton) {
+        const slots = slotInputs.querySelectorAll('.saved-slot');
+
+        slots.forEach(slot => {
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.value = slot.textContent;
+            input.style.cssText = 'margin: 5px 0; width: 100%;';
+            slot.textContent = '';
+            slot.appendChild(input);
+            slot.classList.replace('saved-slot', 'editable-slot');
+        });
+
+        editButton.style.display = 'none';
+        addButton.style.display = 'none';
+        saveButton.style.display = 'inline-block';
+        cancelButton.style.display = 'inline-block';
+    }
+
+    function saveSlots(index, training, slotInputs) {
+        const inputs = slotInputs.querySelectorAll('input');
+        const newSlotValues = Array.from(inputs).map(input => input.value.trim()).filter(value => value);
+
+        const storedData = JSON.parse(localStorage.getItem('trainings')) || [];
+        storedData[index] = { ...training, slotDetails: newSlotValues };
+        localStorage.setItem('trainings', JSON.stringify(storedData));
+        loadTrainingData();
+    }
+
+    function addSlots(index, training, slotInputs) {
+        const inputs = slotInputs.querySelectorAll('input');
+        const newSlotValues = Array.from(inputs).map(input => input.value.trim()).filter(value => value);
+
+        const storedData = JSON.parse(localStorage.getItem('trainings')) || [];
+        storedData[index] = {
+            ...training,
+            slotDetails: [...(training.slotDetails || []), ...newSlotValues]
+        };
+        localStorage.setItem('trainings', JSON.stringify(storedData));
+        loadTrainingData();
+    }
+
+    // Load Training Data
+    function loadTrainingData() {
+        const trainingSlots = document.querySelector('.training-Details');
+        trainingSlots.innerHTML = '';
+
+        const storedData = JSON.parse(localStorage.getItem('trainings')) || [];
+
+        if (storedData.length) {
+            storedData.forEach((training, index) => createTrainingCard(training, index));
+        } else {
+            trainingSlots.innerHTML = '<p>No training data available.</p>';
+        }
+    }
+</script>
+
+	</body>
+</html>

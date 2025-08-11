@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TMS - Training Slots</title>
+	<link rel="stylesheet" href="file:///C:Users\r.santos\Documents\TMS\style\trainingManagement.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+	<script src="file:///C:Users\r.santos\Documents\TMS\script\trainingScript.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/themes/airbnb.css">
+
+	<link rel="icon" href="file:///C:Users\r.santos\Documents\TMS\/images/favicon.png" type="image/png">
+
+    <style>
+/* General Table Styling */
+.training-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 30px;
+    font-size: 14px;
+    background-color: #f9f9f9;
+    color: #333;
+    border: 1px solid #ddd;
+}
+
+.training-table th {
+    background-color: #0073e6;
+    color: #fff;
+    padding: 12px;
+    text-align: left;
+    font-size: 15px;
+    font-weight: bold;
+    border: 1px solid #ddd;
+}
+
+.training-table td {
+    padding: 10px;
+    text-align: left;
+    border: 1px solid #ddd;
+    color: #666;
+}
+
+/* Row Hover Effect */
+.training-table tr:hover {
+    background-color: #f0f4f8;
+    transition: background-color 0.2s ease;
+}
+
+/* Input Fields */
+.training-table input[type="text"],
+.training-table input[type="number"] {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+    background-color: #fff;
+    color: #333;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .training-table th,
+    .training-table td {
+        padding: 8px;
+        font-size: 13px;
+    }
+}
+
+/* Styling for date inputs */
+.training-table input[type="date"] {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #fff;
+    color: #333;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.training-table input[type="date"]:focus {
+    border-color: #0073e6;
+    outline: none;
+}
+    </style>
+</head>
+<body>
+	</head>
+	<body>
+		<header>
+			<div class="container">
+				<h1>Training Management System</h1>
+			</div>
+			<!-- Header Menu (Home icon and Burger menu on the same line) -->
+			<div class="header-menu">
+				<!-- Home Icon Button -->
+			<a href="file:///C:\Users\r.santos\Documents\TMS\home-page.html">
+				<button class="home-button">
+					<i class="fas fa-home"></i> <!-- Font Awesome Home Icon -->
+				</button>
+			</a>
+				<!-- Burger Menu -->
+				<div class="burger-menu">
+					<div></div>
+					<div></div>
+					<div></div>
+				</div>
+			</div>
+		</header>
+		 <!-- Hidden Menu Content -->
+		<div class="burger-menu-content">
+			<h3>Training Materials</h3>
+			<ul class="sub-menu">
+				<li><a href="file:///C:\Users\r.santos\Documents\TMS\materials.html">Material</a></li>
+				<li><a href="file:///C:\Users\r.santos\Documents\TMS\certification.html">Certifications</a></li>
+				<li><a href="file:///C:\Users\r.santos\Documents\TMS\evaluation-questionnaire.html">Evaluation questionnaire</a></li>
+				<li><a href="file:///C:\Users\r.santos\Documents\TMS\dailyTrainingReport.html">Daily Training Report</a></li>				
+			</ul>
+			
+			<h3>Training Preparation</h3>
+			<ul class="sub-menu">
+				<li><a href="file:///C:\Users\r.santos\Documents\TMS\training-slots.html">Create Training Slots</a></li>
+				<li><a href="file:///C:\Users\r.santos\Documents\TMS\tlSlots.html">Assign to Training</a></li>
+				<li><a href="file:///C:\Users\r.santos\Documents\TMS\training-plan.html">Training Plan</a></li>
+				<li><a href="file:///C:\Users\r.santos\Documents\TMS\schedule.html">Schedule</a></li>				
+			</ul>
+			
+			<h3>Accounts</h3>
+			<ul class="sub-menu">
+				<li><a href="file:///C:\Users\r.santos\Documents\TMS\manage-trainers.html">Manage Trainer's account</a></li>
+				<li><a href="file:///C:\Users\r.santos\Documents\TMS\agents.html">Manage Agents</a></li>				
+			</ul>
+			<button class="logout" onclick="logout()">Logout</Button>
+		</div>
+		<div class="site-content">
+		<h3 class="page-name">Create Training Availability</h3>	
+
+<main>
+    <div class="content-slots">
+        <div class="training-slots">
+            <!-- Trainings assigned to the trainer logged in appear here -->
+            <table class="training-table">
+                <thead>
+                    <tr>
+                        <th>Training Name</th>
+                        <th>Start Date</th>
+                        <th>End Date</th>
+                        <th>Start Time [CET]</th>
+                        <th>End Time [CET]</th>
+                        <th>Amount of Slots</th>
+                        <th>Market</th>
+                        <th>HUB</th>
+                        <th>Language</th>
+                        <th>Trainer</th>
+                    </tr>
+                </thead>
+                <tbody>
+					<tr>
+						<td><select id="training-name">
+                    <option value="">Select Training</option>
+                    <!-- Options will be populated dynamically -->
+                </select></td>
+						<td><input type="date" class="start-date" id="start-date" value="" onchange="calculateTrainingInfo(this)" /></td>
+						<td><input type="date" class="end-date" id="end-date" value="" onchange="calculateTrainingInfo(this)" /></td>
+						<td><input type="time" class="start-time" id="start-time" value="" onchange="calculateTrainingInfo(this)" /></td>
+						<td><input type="time" class="end-time" id="end-time" value="" onchange="calculateTrainingInfo(this)" /></td>
+						<td>
+							<select class="slots" id="slots">
+								<option value="0">0</option>
+								<option value="1">1</option>
+								<option value="2">2</option>
+								<option value="3">3</option>
+								<option value="4">4</option>
+								<option value="5">5</option>
+								<option value="6">6</option>
+								<option value="7">7</option>
+								<option value="8">8</option>
+								<option value="9">9</option>
+								<option value="10">10</option>
+								<option value="11">11</option>
+								<option value="12">12</option>
+								<option value="13">13</option>
+								<option value="14">14</option>
+								<option value="15">15</option>
+								<option value="16">16</option>
+								<option value="17">17</option>
+								<option value="18">18</option>
+								<option value="19">19</option>
+								<option value="20">20</option>
+							</select>
+						</td>
+						<td><input type="text" id="location" value="" /></td>
+						<!-- HUB Dropdown -->
+						<td>
+							<select class="hub" id="hub">
+								<option value="">Select HUB</option>
+								<option value="IGT GGN">IGT GGN</option>
+								<option value="IGT BOG">IGT BOG</option>
+								<option value="IGT BUH">IGT BUH</option>
+								<option value="KTW">KTW</option>
+								<option value="Armatis">Armatis</option>
+								<option value="UK">UK</option>
+								<option value="Coforge">Coforge</option>
+								<option value="Mixed">Mixed</option>
+							</select>
+						</td>
+						<!-- Language Dropdown -->
+						<td>
+							<select class="language" id="language">
+								<option value="">Select Language</option>
+								<option value="EN">English</option>
+								<option value="PL">Polish</option>
+								<option value="SP">Spanish</option>
+								<option value="RO">Romanian</option>
+								<option value="BU">Bulgarian</option>
+								<option value="PT">Portuguese</option>
+							</select>
+						</td>
+						<!-- Trainer Dropdown -->
+						<td>
+							<select class="trainer" id="trainer">
+								<option value="">Select Trainer</option>
+							</select>
+						</td>
+					</tr>
+                </tbody>
+				<button id="add-training-button" class="add-training-button">Add More Training</button>
+				<div id="training-tables-container"></div>
+
+            </table>
+			<div class="save-all-button-container">
+				<button class="save-all-button" id="save-all-button">Save all</button>
+			</div>
+        </div>
+    </div>
+		<div class="middle-wrapper-excel">
+			<div class="import-excel-container">
+				<h2><i class="fas fa-file-excel"></i> Import Slots from Excel</h2>
+				<form id="importExcelForm">
+					<div class="form-group">
+						<label for="excelFile"><i class="fas fa-upload"></i> Choose Excel File:</label>
+						<input type="file" id="excelFile" accept=".xlsx, .xls" required />
+					</div>
+					<button class="import-button" type="submit"><i class="fas fa-file-import"></i> Import</button>
+				</form>
+				<p class="help-text">* Only .xls and .xlsx files are allowed. Ensure the file format matches the template.</p>
+			</div>
+		</div>
+		<div class="training-slots">
+		<div class="traingCards-container">
+		<div class="data-info"></div>
+		<div class="delete-all-container">
+			<button class="delete-all-button" onclick="deleteAllTrainingSlots()">Delete All Trainings</button>
+			<button class="delete-selected-button" onclick="">Delete Selected Trainings</button>
+		</div>
+		</div>
+		<div class="wrap-slots">
+			<!-- The Training Card goes here -->
+			<div class="middle-wrapper">
+			</div>
+		</div>
+		</div>
+</main>
+<script>
+// Initialize localStorage variables
+
+// For checking if the user is logged in
+localStorage.setItem("isLoggedIn", localStorage.getItem("isLoggedIn") || "false");
+
+// For storing training data (if it's not already in localStorage, initialize with an empty array)
+localStorage.setItem("trainings", localStorage.getItem("trainings") || JSON.stringify([]));
+
+// For storing the list of trainers (if it's not already in localStorage, initialize with an empty array)
+localStorage.setItem("trainerStorage", localStorage.getItem("trainerStorage") || JSON.stringify([]));
+
+
+    // DOM Content Loaded Events
+    document.addEventListener('DOMContentLoaded', function () {
+        // Redirect if not logged in
+        if (!localStorage.getItem("isLoggedIn")) {
+            window.location.href = "login.html";
+        }
+        // Load training data
+        loadTrainingData();
+    });
+	
+const trainingMaterials = JSON.parse(localStorage.getItem("trainingMaterial")) || [];
+
+document.addEventListener("DOMContentLoaded", function () {
+    const container = document.getElementById("training-tables-container");
+    const addButton = document.getElementById("add-training-button");
+
+    // Store the original table structure
+    const trainingTableHTML = document.querySelector(".training-table").outerHTML;
+
+    // Populate the dropdown for the initial table
+    populateTrainingDropdown(document.querySelector("#training-name"));
+
+    addButton.addEventListener("click", function () {
+        let newTableWrapper = document.createElement("div");
+        newTableWrapper.innerHTML = trainingTableHTML;
+        container.appendChild(newTableWrapper);
+
+        // Find the dropdown in the new table and populate it
+        let newDropdown = newTableWrapper.querySelector("#training-name");
+        populateTrainingDropdown(newDropdown);
+    });
+
+    function populateTrainingDropdown(dropdown) {
+        if (!dropdown) return;
+        
+        dropdown.innerHTML = '<option value="">Select Training</option>'; // Reset dropdown
+        trainingMaterials.forEach(material => {
+            let option = document.createElement("option");
+            option.value = material.trainingName;
+            option.textContent = material.trainingName;
+            dropdown.appendChild(option);
+        });
+    }
+});
+
+function deleteAllTrainingSlots() {
+    // Clear all training data from localStorage
+    localStorage.removeItem('trainings');
+    
+    // Update the count of total trainings (i.e., set to 0)
+    const dataInfo = document.querySelector('.data-info');
+    dataInfo.innerHTML = 'Total Trainings: 0';
+
+    // Optionally: If you want to remove the training cards from the page
+    // You can clear the content of the training cards section if needed
+    const trainingCardsContainer = document.querySelector('.middle-wrapper');
+    trainingCardsContainer.innerHTML = '';  // If you want to remove the displayed cards
+}
+
+// Select the save button and middle wrapper for displaying training cards
+const middleWrapper = document.querySelector('.middle-wrapper');
+
+// Function to update the count of training cards
+function updateTrainingCardCount() {
+    const trainingCards = document.querySelectorAll('.training-card');  // Select all training cards
+    const dataInfo = document.querySelector('.data-info');  // Select the data-info div
+    dataInfo.innerHTML = `Total Trainings: ${trainingCards.length}`;  // Update the count
+}
+
+// Function to create or update a training card
+function createTrainingCard(training) {
+    // Calculate Assigned and Available Slots
+    const assignedSlots = (training.slotDetails || []).length;
+    const totalSlots = parseInt(training.slots, 10) || 0;
+    const availableSlots = totalSlots - assignedSlots;
+
+    // Create a new div for the training card or find existing one
+    let trainingCard = document.createElement('div');
+    trainingCard.classList.add('training-card');
+    trainingCard.style.border = '1px solid #e1076a'; 
+    trainingCard.style.padding = '20px'; 
+    trainingCard.style.borderRadius = '10px'; 
+    trainingCard.style.backgroundColor = '#fff'; 
+    trainingCard.style.width = '400px'; 
+    trainingCard.style.fontFamily = 'Arial, sans-serif'; 
+    trainingCard.style.color = '#333'; 
+
+    // Create the training info section
+    const trainingInfo = document.createElement('div');
+    trainingInfo.classList.add('training-info');
+
+    // Add training details to the card
+    trainingInfo.innerHTML = `
+        <h3 style="background-color: #e1076a; color: white; padding: 10px; text-align: center; border-radius: 5px;">Training Information</h3>
+        <div><strong>Training Name:</strong> <span class="training-name">${training.trainingName}</span></div>
+        <div><strong>Training Start Date:</strong> <span class="start-date">${training.startDate}</span></div>
+        <div><strong>Training End Date:</strong> <span class="end-date">${training.endDate}</span></div>
+        <div><strong>Training Start Time [CET]:</strong> <span class="start-time">${training.startTime}</span></div>
+        <div><strong>Training End Time [CET]:</strong> <span class="end-time">${training.endTime}</span></div>
+        <div><strong>Total Slots:</strong> <span class="total-slots">${totalSlots}</span></div>
+        <div><strong>Assigned Slots:</strong> <span class="assigned-slots">${assignedSlots}</span></div>
+        <div><strong>Available Slots:</strong> <span class="available-slots">${availableSlots}</span></div>
+        <div><strong>Market:</strong> <span class="market">${training.market}</span></div>
+        <div><strong>HUB:</strong> <span class="hub">${training.hub}</span></div>
+        <div><strong>Language:</strong> <span class="language">${training.language}</span></div>
+        <div><strong>Trainer:</strong> <span class="trainer">${training.trainer}</span></div>
+        <button class="edit-TrainingCard-button">Edit</button>
+    `;
+
+    // Append training info to the card
+    trainingCard.appendChild(trainingInfo);
+    middleWrapper.appendChild(trainingCard);
+
+    // Update the training card count
+    updateTrainingCardCount();
+
+    // Add functionality to Edit/Save button
+    const editButton = trainingCard.querySelector('.edit-TrainingCard-button');
+
+    editButton.addEventListener('click', function handleEdit() {
+        if (editButton.innerText === 'Edit') {
+            // Convert fields to editable inputs with customized styling
+            const spans = trainingCard.querySelectorAll('span');
+            spans.forEach(span => {
+                const fieldClass = span.classList[0];
+
+                if (fieldClass === 'trainer') {
+                    // Create a dropdown for the trainer field
+                    const select = document.createElement('select');
+                    select.style.padding = '5px';
+                    select.style.borderRadius = '5px';
+                    select.style.border = '1px solid #e1076a';
+                    select.style.marginBottom = '10px'; // Add margin at the bottom
+                    const trainerStorage = JSON.parse(localStorage.getItem('trainerStorage')) || [];
+                    trainerStorage.forEach(user => {
+                        const option = document.createElement('option');
+                        option.value = user.name || ''; // Use the name field for dropdown value
+                        option.textContent = user.name || ''; // Display the name in the dropdown
+                        if (user.name === span.innerText.trim()) {
+                            option.selected = true; // Set the current trainer as selected
+                        }
+                        select.appendChild(option);
+                    });
+
+                    span.innerHTML = ''; // Clear span content
+                    span.appendChild(select); // Replace span content with select
+                } else if (fieldClass === 'start-date' || fieldClass === 'end-date') {
+                    // Create a date picker for date fields with custom styling
+                    const input = document.createElement('input');
+                    input.type = 'text'; // Use text input for flatpickr
+                    input.style.padding = '5px';
+                    input.style.borderRadius = '5px';
+                    input.style.border = '1px solid #e1076a';
+                    input.style.marginBottom = '10px'; // Add margin at the bottom
+
+                    // Initialize flatpickr for date
+                    flatpickr(input, {
+                        dateFormat: 'Y-m-d', // Customize date format
+                        defaultDate: span.innerText.trim(), // Set the current value as default
+                        theme: "airbnb", // Apply the Airbnb theme
+                        disableMobile: true // Disable the mobile-specific picker for better design
+                    });
+
+                    span.innerHTML = ''; // Clear span content
+                    span.appendChild(input); // Replace span content with input
+                } else if (fieldClass === 'start-time' || fieldClass === 'end-time') {
+                    // Create a time picker for time fields with custom styling
+                    const input = document.createElement('input');
+                    input.type = 'text'; // Use text input for flatpickr
+                    input.style.padding = '10px';
+                    input.style.borderRadius = '5px';
+                    input.style.border = '1px solid #e1076a';
+                    input.style.marginBottom = '10px'; // Add margin at the bottom
+
+                    // Initialize flatpickr for time picker with custom clock appearance
+                    flatpickr(input, {
+					enableTime: true, // Enable the time picker
+					noCalendar: true, // Hide the calendar
+					dateFormat: 'H:i', // Use 24-hour format (H: Hour, i: Minutes)
+					defaultDate: span.innerText.trim(), // Set the current value as default
+					time_24hr: true, // Enforce 24-hour format
+					theme: "airbnb", // Apply the Airbnb theme
+					disableMobile: true // Disable the mobile-specific picker for better design
+				});
+
+                    span.innerHTML = ''; // Clear span content
+                    span.appendChild(input); // Replace span content with input
+                } else if (fieldClass === 'total-slots') {
+                    // Create a number input for total slots with custom styling
+                    const input = document.createElement('input');
+                    input.type = 'number';
+                    input.value = parseInt(span.innerText.trim(), 10) || 0; // Default to 0 if the value is not a number
+                    input.min = '0'; // Minimum value
+                    input.style.padding = '5px';
+                    input.style.borderRadius = '5px';
+                    input.style.border = '1px solid #e1076a';
+                    input.style.marginBottom = '10px'; // Add margin at the bottom
+                    span.innerHTML = ''; // Clear span content
+                    span.appendChild(input); // Replace span content with number input
+
+                    // Add event listener to ensure Total Slots cannot go below Assigned Slots
+                    input.addEventListener('input', function () {
+                        const assignedSlots = parseInt(trainingCard.querySelector('.assigned-slots').innerText, 10);
+                        let totalSlots = parseInt(input.value, 10);
+                        if (totalSlots < assignedSlots) {
+                            input.value = assignedSlots; // Revert back to Assigned Slots if the value is less
+                        }
+                    });
+                } else if (fieldClass === 'assigned-slots' || fieldClass === 'available-slots') {
+                    // Do not make these fields editable, leave them as spans
+                    return;
+                } else {
+                    // For other fields, use a text input with custom styling
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.value = span.innerText.trim(); // Set input value
+                    input.style.padding = '5px';
+                    input.style.borderRadius = '5px';
+                    input.style.border = '1px solid #e1076a';
+                    input.style.marginBottom = '10px'; // Add margin at the bottom
+                    span.innerHTML = ''; // Clear span content
+                    span.appendChild(input); // Replace span content with input
+                }
+            });
+
+            editButton.innerText = 'Save'; // Change button text to "Save"
+        } else if (editButton.innerText === 'Save') {
+            // Convert inputs back to spans and update the content
+            const spans = trainingCard.querySelectorAll('span');
+            spans.forEach(span => {
+                const input = span.querySelector('input') || span.querySelector('select');
+                if (input) {
+                    span.innerText = input.value.trim(); // Replace input with plain text
+                }
+            });
+
+            // Update the `training` object with new values
+            training.trainingName = trainingCard.querySelector('.training-name').innerText;
+            training.startDate = trainingCard.querySelector('.start-date').innerText;
+            training.endDate = trainingCard.querySelector('.end-date').innerText;
+            training.startTime = trainingCard.querySelector('.start-time').innerText;
+            training.endTime = trainingCard.querySelector('.end-time').innerText;
+            training.slots = parseInt(trainingCard.querySelector('.total-slots').innerText, 10) || 0;
+            training.market = trainingCard.querySelector('.market').innerText;
+            training.hub = trainingCard.querySelector('.hub').innerText;
+            training.language = trainingCard.querySelector('.language').innerText;
+            training.trainer = trainingCard.querySelector('.trainer').innerText;
+
+            // Save updated training to localStorage
+            const allTrainings = JSON.parse(localStorage.getItem('trainings')) || [];
+            const trainingIndex = allTrainings.findIndex(t => t.id === training.id);
+            if (trainingIndex !== -1) {
+                allTrainings[trainingIndex] = training; // Update the specific training
+                localStorage.setItem('trainings', JSON.stringify(allTrainings)); // Save back to localStorage
+            }
+
+            editButton.innerText = 'Edit'; // Change button text back to "Edit"
+        }
+    });
+}
+
+// Function to save training to localStorage
+function saveTrainingToLocalStorage(trainingId, updatedTraining) {
+    const storedData = JSON.parse(localStorage.getItem('trainings')) || [];
+
+    // Find the training in the array by its ID
+    const index = storedData.findIndex(training => training.id === trainingId);
+
+    if (index !== -1) {
+        // Update the training at that index
+        storedData[index] = updatedTraining;
+    } else {
+        // If the training is not found, add it as a new entry
+        storedData.push(updatedTraining);
+    }
+
+    // Save the updated array back to localStorage
+    localStorage.setItem('trainings', JSON.stringify(storedData));
+}
+
+// Modified loadTrainingData function to update the count when data is loaded
+function loadTrainingData() {
+    // Clear the previous training cards first (to avoid duplicates)
+    const middleWrapper = document.querySelector('.middle-wrapper');
+    middleWrapper.innerHTML = '';
+
+    // Get the training data from localStorage
+    const storedData = JSON.parse(localStorage.getItem('trainings'));
+
+    // If data exists, loop through and create training cards
+    if (storedData) {
+        storedData.forEach(training => {
+            createTrainingCard(training);  // Create and display the training card
+        });
+    }
+}
+
+// Load training data on page load (this will be the only time it happens)
+document.addEventListener('DOMContentLoaded', function () {
+    loadTrainingData();  // Load and display all saved training cards on page load
+});
+
+// Load any saved training data when the page loads
+loadTrainingData();
+
+// Function to format hours into two digits (e.g., '1:05' -> '01:05')
+function formatTimeTo24HourFormat(time) {
+    let [hours, minutes] = time.split(':');
+    hours = hours.padStart(2, '0');  // Pad hour to 2 digits if necessary
+    return `${hours}:${minutes}`;
+}
+
+document.getElementById('importExcelForm').addEventListener('submit', function(event) {
+    event.preventDefault();  // Prevent form from submitting and reloading the page
+
+    const fileInput = document.getElementById('excelFile');  // Get the file input element
+    const file = fileInput.files[0];  // Get the first file from the input
+
+    if (file) {
+        const reader = new FileReader();  // Create a new FileReader instance
+
+        reader.onload = function(e) {
+            const data = e.target.result;  // Get the binary data from the file
+            const workbook = XLSX.read(data, { type: 'binary' });  // Read the data as an XLSX file
+            const sheetName = workbook.SheetNames[0];  // Get the name of the first sheet
+            const sheet = workbook.Sheets[sheetName];  // Get the actual sheet data
+
+            // Clear existing rows in the table (except the header row)
+            const tableBody = document.querySelector('.training-table tbody');
+            while (tableBody.rows.length > 0) {
+                tableBody.deleteRow(0);  // Remove all rows from the table body
+            }
+
+            // Parse the Excel data into JSON (convert it to a 2D array, assuming the first row as header)
+            const trainingData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+
+            // Retrieve trainer data from localStorage
+            const trainerStorage = JSON.parse(localStorage.getItem('trainerStorage')) || [];
+            const trainerOptions = trainerStorage
+                .map(trainerObj => `<option value="${trainerObj.name}">${trainerObj.name}</option>`)
+                .join('');
+
+            // Start from row 2 (row 1 is the header row)
+            for (let i = 1; i < trainingData.length; i++) {
+                const row = trainingData[i];
+
+                // Extract and format the necessary data from the row
+                const trainingName = row[0];
+                const startDateRaw = XLSX.utils.format_cell(sheet['B' + (i + 1)]) || '';  // Format as date
+                const endDateRaw = XLSX.utils.format_cell(sheet['C' + (i + 1)]) || '';    // Format as date
+                const startTimeRaw = XLSX.utils.format_cell(sheet['D' + (i + 1)]) || '';   // Format as time
+                const endTimeRaw = XLSX.utils.format_cell(sheet['E' + (i + 1)]) || '';     // Format as time
+                const slots = row[5];
+                const market = row[6];
+                const hub = row[7];
+                const language = row[8];
+                const trainer = row[9];
+
+                // Function to format dd/mm/yyyy to yyyy-mm-dd
+                function formatDateToInput(dateStr) {
+                    if (!dateStr) return '';
+                    const [day, month, year] = dateStr.split('/');
+                    return `${year}-${month}-${day}`;  // Convert to yyyy-mm-dd format
+                }
+
+                // Function to convert time to 24-hour format
+                function formatTimeTo24HourFormat(timeStr) {
+                    if (!timeStr) return '';
+                    const [hours, minutes] = timeStr.split(':');
+                    return `${hours.padStart(2, '0')}:${minutes.padStart(2, '0')}`;
+                }
+
+                // Format the dates and times
+                const startDate = formatDateToInput(startDateRaw);
+                const endDate = formatDateToInput(endDateRaw);
+                const startTime = formatTimeTo24HourFormat(startTimeRaw);
+                const endTime = formatTimeTo24HourFormat(endTimeRaw);
+
+                // Create a new row for the table
+                const newRow = document.createElement('tr');
+
+                // Create and append cells for each value in the row
+                newRow.innerHTML = `
+                    <td><input type="text" value="${trainingName}" /></td>
+                    <td><input type="date" value="${startDate}" /></td>
+                    <td><input type="date" value="${endDate}" /></td>
+                    <td><input type="time" value="${startTime}" /></td>
+                    <td><input type="time" value="${endTime}" /></td>
+                    <td>
+                        <select class="slots">
+                            ${[...Array(21).keys()].map(i => `<option value="${i}" ${i == slots ? 'selected' : ''}>${i}</option>`).join('')}
+                        </select>
+                    </td>
+                    <td><input type="text" value="${market}" /></td>
+                    <td>
+                        <select class="hub">
+                            <option value="IGT GGN" ${hub == 'IGT GGN' ? 'selected' : ''}>IGT GGN</option>
+                            <option value="IGT BOG" ${hub == 'IGT BOG' ? 'selected' : ''}>IGT BOG</option>
+                            <option value="IGT BUH" ${hub == 'IGT BUH' ? 'selected' : ''}>IGT BUH</option>
+                            <option value="KTW" ${hub == 'KTW' ? 'selected' : ''}>KTW</option>
+                            <option value="Armatis" ${hub == 'Armatis' ? 'selected' : ''}>Armatis</option>
+                            <option value="UK" ${hub == 'UK' ? 'selected' : ''}>UK</option>
+                            <option value="Coforge" ${hub == 'Coforge' ? 'selected' : ''}>Coforge</option>
+							<option value="Mixed" ${hub == 'Mixed' ? 'selected' : ''}>Mixed</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="language">
+                            <option value="EN" ${language == 'EN' ? 'selected' : ''}>English</option>
+                            <option value="PL" ${language == 'PL' ? 'selected' : ''}>Polish</option>
+                            <option value="SP" ${language == 'SP' ? 'selected' : ''}>Spanish</option>
+                            <option value="RO" ${language == 'RO' ? 'selected' : ''}>Romanian</option>
+                            <option value="BU" ${language == 'BU' ? 'selected' : ''}>Bulgarian</option>
+                            <option value="PT" ${language == 'PT' ? 'selected' : ''}>Portuguese</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="trainer">
+                            ${trainerOptions}
+                        </select>
+                    </td>
+                `;
+                
+                // Append the new row to the table body
+                tableBody.appendChild(newRow);
+            }
+        };
+
+        reader.readAsBinaryString(file);  // Read the file as binary string
+    }
+});
+
+// Select the save-all button
+const saveAllButton = document.getElementById('save-all-button');
+saveAllButton.addEventListener('click', function() {
+    const tableBody = document.querySelector('.training-table tbody');
+    const rows = tableBody.querySelectorAll('tr');  // Get all rows in the table body
+
+    const allTrainings = [];
+
+    // Loop through all rows to extract data
+    rows.forEach(row => {
+        const inputs = row.querySelectorAll('input, select');  // Get all inputs and select elements
+
+        // Extract data from the row and create a new training object
+			const trainingData = {
+				id: Date.now() + Math.random().toString(36).substr(2, 9), // Generate a unique ID
+				trainingName: inputs[0].value,
+				startDate: inputs[1].value,
+				endDate: inputs[2].value,
+				startTime: inputs[3].value,
+				endTime: inputs[4].value,
+				slots: Number(inputs[5].value) || 0, // Convert to number to prevent "00" issue
+				market: inputs[6].value,
+				hub: inputs[7].value,
+				language: inputs[8].value,
+				trainer: inputs[9].value
+			};
+
+        // Push the training data to the allTrainings array
+        allTrainings.push(trainingData);
+
+        // Create and display the new training card for each row
+        createTrainingCard(trainingData);
+    });
+
+    // Retrieve existing trainings from localStorage
+    const existingTrainings = JSON.parse(localStorage.getItem('trainings')) || [];
+
+    // Combine existing trainings with the new ones
+    const updatedTrainings = existingTrainings.concat(allTrainings);
+
+    // Save the updated training data back to localStorage
+    localStorage.setItem('trainings', JSON.stringify(updatedTrainings));
+
+    // Refresh the page to reset the inputs
+    location.reload();  // Reload the page after saving
+});
+
+    // Retrieve trainer data from localStorage
+    const trainerStorage = localStorage.getItem('trainerStorage');
+    const trainers = trainerStorage ? JSON.parse(trainerStorage) : [];
+
+    // Get the dropdown element
+    const trainerDropdown = document.getElementById('trainer');
+
+    // Populate the dropdown
+    trainers.forEach(trainer => {
+        const option = document.createElement('option');
+        option.value = trainer.id || trainer.name; // Assuming each trainer has an `id` property
+        option.textContent = trainer.name;
+        trainerDropdown.appendChild(option);
+    });
+
+    </script>
+</body>
+</html>
