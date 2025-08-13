@@ -33,16 +33,16 @@
     <h3>Training Materials</h3>
     <ul class="sub-menu">
         <li><a href="materials.html">Material</a></li>
-        <li><a href="file:///C:/Users/r.santos/Documents/TMS/certification.html">Certifications</a></li>
-        <li><a href="file:///C:/Users/r.santos/Documents/TMS/evaluation-questionnaire.html">Evaluation questionnaire</a></li>
-        <li><a href="file:///C:/Users/r.santos/Documents/TMS/dailyTrainingReport.html">Daily Training Report</a></li>                
+        <li><a href="certification.html">Certifications</a></li>
+        <li><a href="evaluation-questionnaire.html">Evaluation questionnaire</a></li>
+        <li><a href="dailyTrainingReport.html">Daily Training Report</a></li>                
     </ul>
     <h3>Training Preparation</h3>
     <ul class="sub-menu">
-        <li><a href="file:///C:/Users/r.santos/Documents/TMS/training-slots.html">Create Training Slots</a></li>
-        <li><a href="file:///C:/Users/r.santos/Documents/TMS/tlSlots.html">Assign to Training</a></li>
-        <li><a href="file:///C:/Users/r.santos/Documents/TMS/training-plan.html">Training Plan</a></li>
-        <li><a href="file:///C:/Users/r.santos/Documents/TMS/schedule.html">Schedule</a></li>                
+        <li><a href="training-slots.html">Create Training Slots</a></li>
+        <li><a href="tlSlots.html">Assign to Training</a></li>
+        <li><a href="training-plan.html">Training Plan</a></li>
+        <li><a href="schedule.html">Schedule</a></li>                
     </ul>
     <h3>Accounts</h3>
     <ul class="sub-menu">
@@ -72,13 +72,14 @@
                             <td><input type="email" id="user-email" placeholder="johndoe@example.com" /></td>
                             <td>
                                 <select id="user-department">
-                                    <option value="Sales" selected disabled hidden>Select</option>
+                                    <option value="" selected disabled hidden>Select</option>
                                     <option value="Training Team">Training Team</option>
+                                    <option value="Sales">Sales</option>
                                 </select>
                             </td>
                             <td>
                                 <select id="user-position">
-                                    <option value="Manager" selected disabled hidden>Select</option>
+                                    <option value="" selected disabled hidden>Select</option>
                                     <option value="Manager">Manager</option>
                                     <option value="Team Leader">Team Leader</option>
                                     <option value="Trainer">Trainer</option>
@@ -98,7 +99,7 @@
         </div>
         <div class="middle-wrapper-excel">
             <div class="import-excel-container">
-                <h2><i class="fas fa-file-excel"></i> Import Agents from Excel</h2>
+                <h2><i class="fas fa-file-excel"></i> Import Trainers from Excel</h2>
                 <form id="importExcelForm">
                     <div class="form-group">
                         <label for="excelFile"><i class="fas fa-upload"></i> Choose Excel File:</label>
@@ -106,7 +107,7 @@
                     </div>
                     <button class="import-button" type="submit"><i class="fas fa-file-import"></i> Import</button>
                 </form>
-                <p class="help-text">* Only .xls and .xlsx files are allowed. Ensure the file format matches the template.</p>
+                <p class="help-text">* Only .xls and .xlsx files are allowed. Ensure the file has columns: Name, Email, Department, Position, Password.</p>
             </div>
         </div>
         <div class="table-container" id="training-skills">
@@ -128,14 +129,20 @@
 </div>
 <script type="module">
 /*** Constants and Storage Variables ***/
-const SUPABASE_URL = "https://mypzlemscnzlplzejlbh.supabase.co"; // Replace with your Supabase project URL
-const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im15cHpsZW1zY256bHBsemVqbGJoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTUwNjk4MzUsImV4cCI6MjA3MDY0NTgzNX0.nkfCNHJtCOoFbNZke0pZMtGNcKjtzJXZ7Yhg3n7Zr5w"; // Replace with your Supabase anon key
+const SUPABASE_URL = "https://mypzlemscnzlplzejlbh.supabase.co";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im15cHpsZW1zY256bHBsemVqbGJoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTUwNjk4MzUsImV4cCI6MjA3MDY0NTgzNX0.nkfCNHJtCOoFbNZke0pZMtGNcKjtzJXZ7Yhg3n7Zr5w";
 const LOGIN_PAGE = "login.html";
 let trainerStorage = [];
 
 // Initialize Supabase Client
-const { createClient } = Supabase;
-const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+let supabase;
+try {
+    supabase = Supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    console.log("Supabase client initialized successfully.");
+} catch (err) {
+    console.error("Error initializing Supabase client:", err);
+    alert("Failed to connect to the database. Please check the console for details.");
+}
 
 // DOM Elements
 const tableBody = document.querySelector("#users-list");
@@ -165,9 +172,11 @@ async function loadTrainerStorage() {
             position: row.position || "",
             password: row.password || ""
         }));
+        console.log("Trainers loaded:", trainerStorage);
         populateTable();
     } catch (err) {
         console.error("Error loading trainers from Supabase:", err);
+        alert("Failed to load trainers. Please check the console for details.");
         trainerStorage = [];
         populateTable();
     }
@@ -179,9 +188,10 @@ async function saveTrainerStorage(trainer) {
             .from("trainers")
             .upsert(trainer, { onConflict: "id" });
         if (error) throw error;
-        console.log("Trainer data saved to Supabase.");
+        console.log("Trainer data saved to Supabase:", trainer);
     } catch (err) {
         console.error("Error saving to Supabase:", err);
+        alert("Failed to save trainer. Please check the console for details.");
     }
 }
 
@@ -192,9 +202,10 @@ async function deleteTrainer(id) {
             .delete()
             .eq("id", id);
         if (error) throw error;
-        console.log("Trainer deleted from Supabase.");
+        console.log("Trainer deleted from Supabase, ID:", id);
     } catch (err) {
         console.error("Error deleting from Supabase:", err);
+        alert("Failed to delete trainer. Please check the console for details.");
     }
 }
 
@@ -202,6 +213,7 @@ async function deleteTrainer(id) {
 function populateTable() {
     if (!tableBody) {
         console.error("Table body not found.");
+        alert("Table body not found. Please check the HTML structure.");
         return;
     }
     tableBody.innerHTML = "";
@@ -230,6 +242,11 @@ function attachButtonEventListeners(row, index) {
     const editButton = row.querySelector(".edit-trainer-button");
     const saveButton = row.querySelector(".save-trainer-button");
     const removeButton = row.querySelector(".remove-trainer-button");
+
+    if (!editButton || !saveButton || !removeButton) {
+        console.error("Button elements not found in row:", index);
+        return;
+    }
 
     editButton.addEventListener("click", () => editUser(index, row));
     saveButton.addEventListener("click", () => saveUser(index, row));
@@ -265,27 +282,34 @@ function editUser(index, row) {
 async function saveUser(index, row) {
     const inputs = row.querySelectorAll("input, select");
     if (inputs.length < 5) {
-        console.error("Not enough inputs in row for saving.");
+        console.error("Not enough inputs in row for saving:", index);
+        alert("Error: Incomplete form data.");
         return;
     }
     const trainer = {
         id: trainerStorage[index].id,
-        name: inputs[0].value,
-        email: inputs[1].value,
-        department: inputs[2].value,
-        position: inputs[3].value,
-        password: inputs[4].value
+        name: inputs[0].value.trim(),
+        email: inputs[1].value.trim(),
+        department: inputs[2].value.trim(),
+        position: inputs[3].value.trim(),
+        password: inputs[4].value.trim()
     };
+    if (!trainer.name || !trainer.email || !trainer.department || !trainer.position) {
+        alert("Please fill in all required fields.");
+        return;
+    }
     trainerStorage[index] = trainer;
     await saveTrainerStorage(trainer);
-    await loadTrainerStorage(); // Refresh data
+    await loadTrainerStorage();
+    alert("Trainer updated successfully.");
 }
 
 async function removeUser(index) {
     const id = trainerStorage[index].id;
     trainerStorage.splice(index, 1);
     await deleteTrainer(id);
-    await loadTrainerStorage(); // Refresh data
+    await loadTrainerStorage();
+    alert("Trainer removed successfully.");
 }
 
 async function addUser() {
@@ -294,34 +318,40 @@ async function addUser() {
     const departmentInput = document.getElementById("user-department");
     const positionInput = document.getElementById("user-position");
 
-    if (!nameInput.value || !emailInput.value || !departmentInput.value || !positionInput.value) {
-        alert("Please fill in all fields.");
+    if (!nameInput || !emailInput || !departmentInput || !positionInput) {
+        console.error("Form inputs not found.");
+        alert("Error: Form inputs not found.");
         return;
     }
 
     const trainer = {
-        name: nameInput.value,
-        email: emailInput.value,
-        department: departmentInput.value,
-        position: positionInput.value,
+        name: nameInput.value.trim(),
+        email: emailInput.value.trim(),
+        department: departmentInput.value.trim(),
+        position: positionInput.value.trim(),
         password: "" // Password can be set via reset if needed
     };
+
+    if (!trainer.name || !trainer.email || !trainer.department || !trainer.position) {
+        alert("Please fill in all required fields.");
+        return;
+    }
 
     try {
         const { error } = await supabase
             .from("trainers")
             .insert([trainer]);
         if (error) throw error;
-        console.log("Trainer added to Supabase.");
-        await loadTrainerStorage(); // Refresh data
-
-        // Clear input fields
+        console.log("Trainer added to Supabase:", trainer);
+        await loadTrainerStorage();
         nameInput.value = "";
         emailInput.value = "";
-        departmentInput.value = "Sales";
-        positionInput.value = "Manager";
+        departmentInput.value = "";
+        positionInput.value = "";
+        alert("Trainer added successfully.");
     } catch (err) {
         console.error("Error adding trainer to Supabase:", err);
+        alert("Failed to add trainer. Please check the console for details.");
     }
 }
 
@@ -335,43 +365,71 @@ async function handleExcelImport(event) {
     }
     const reader = new FileReader();
     reader.onload = async function (e) {
-        const data = e.target.result;
-        const workbook = XLSX.read(data, { type: "binary" });
-        const sheetName = workbook.SheetNames[0];
-        const sheet = workbook.Sheets[sheetName];
-        const rows = XLSX.utils.sheet_to_json(sheet, { header: 1 });
-
-        const trainers = rows.slice(1).map(row => ({
-            name: row[0] || "",
-            email: row[1] || "",
-            department: row[2] || "",
-            position: row[3] || "",
-            password: row[4] || ""
-        }));
-
         try {
+            const data = e.target.result;
+            const workbook = XLSX.read(data, { type: "binary" });
+            const sheetName = workbook.SheetNames[0];
+            const sheet = workbook.Sheets[sheetName];
+            const rows = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+
+            if (rows.length < 2) {
+                alert("Excel file is empty or has no data rows.");
+                return;
+            }
+
+            const trainers = rows.slice(1).map(row => ({
+                name: (row[0] || "").toString().trim(),
+                email: (row[1] || "").toString().trim(),
+                department: (row[2] || "").toString().trim(),
+                position: (row[3] || "").toString().trim(),
+                password: (row[4] || "").toString().trim()
+            })).filter(trainer => trainer.name && trainer.email && trainer.department && trainer.position);
+
+            if (trainers.length === 0) {
+                alert("No valid trainer data found in the Excel file.");
+                return;
+            }
+
             const { error } = await supabase
                 .from("trainers")
                 .insert(trainers);
             if (error) throw error;
-            console.log("Trainers imported to Supabase.");
-            await loadTrainerStorage(); // Refresh data
+            console.log("Trainers imported to Supabase:", trainers);
+            await loadTrainerStorage();
+            excelFileInput.value = "";
+            alert(`Successfully imported ${trainers.length} trainers.`);
         } catch (err) {
             console.error("Error importing trainers to Supabase:", err);
+            alert("Failed to import trainers. Please check the console for details.");
         }
+    };
+    reader.onerror = () => {
+        console.error("Error reading Excel file.");
+        alert("Error reading Excel file. Please ensure it's a valid .xls or .xlsx file.");
     };
     reader.readAsBinaryString(file);
 }
 
 /*** Initialization ***/
 document.addEventListener("DOMContentLoaded", async function () {
+    console.log("DOM loaded, initializing...");
     redirectToLoginIfNotLoggedIn();
+    if (!supabase) {
+        alert("Supabase client not initialized. Check SUPABASE_URL and SUPABASE_KEY.");
+        return;
+    }
     await loadTrainerStorage();
     if (importExcelForm) {
         importExcelForm.addEventListener("submit", handleExcelImport);
+        console.log("Excel import form listener attached.");
+    } else {
+        console.error("Import form not found.");
     }
     if (addUserButton) {
         addUserButton.addEventListener("click", addUser);
+        console.log("Add user button listener attached.");
+    } else {
+        console.error("Add user button not found.");
     }
 });
 </script>
