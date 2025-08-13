@@ -7,8 +7,7 @@
     <link rel="stylesheet" href="trainingmanagement.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <script src="https://apis.google.com/js/api.js"></script>
-    <script src="trainingScript.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link rel="icon" href="/images/favicon.png" type="image/png">
 </head>
 <body>
@@ -129,37 +128,20 @@
 </div>
 <script type="module">
 /*** Constants and Storage Variables ***/
-const CLIENT_ID = "YOUR_CLIENT_ID_HERE"; // Replace with your Google OAuth Client ID
-const API_KEY = "YOUR_API_KEY_HERE"; // Replace with your Google API Key
-const SPREADSHEET_ID = "19KYL0ADFYjhZ0Nyy1WqPzoEPEyFmBJyEhpDxxBF5Luw"; // Extracted from the provided URL
-const RANGE = "Sheet1!A2:E"; // Assumes data starts from A2 with headers in A1:E1
+const SUPABASE_URL = "https://mypzlemscnzlplzejlbh.supabase.co"; // Replace with your Supabase project URL
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im15cHpsZW1zY256bHBsemVqbGJoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTUwNjk4MzUsImV4cCI6MjA3MDY0NTgzNX0.nkfCNHJtCOoFbNZke0pZMtGNcKjtzJXZ7Yhg3n7Zr5w"; // Replace with your Supabase anon key
 const LOGIN_PAGE = "login.html";
 let trainerStorage = [];
+
+// Initialize Supabase Client
+const { createClient } = Supabase;
+const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // DOM Elements
 const tableBody = document.querySelector("#users-list");
 const importExcelForm = document.getElementById("importExcelForm");
 const excelFileInput = document.getElementById("excelFile");
 const addUserButton = document.getElementById("add-user-button");
-
-// Google API Initialization
-function initGoogleAPI() {
-    gapi.load("client:auth2", () => {
-        gapi.client.init({
-            apiKey: API_KEY,
-            clientId: CLIENT_ID,
-            scope: "https://www.googleapis.com/auth/spreadsheets",
-            discoveryDocs: ["https://sheets.googleapis.com/$discovery/rest?version=v4"],
-        }).then(() => {
-            if (!gapi.auth2.getAuthInstance().isSignedIn.get()) {
-                gapi.auth2.getAuthInstance().signIn();
-            }
-            loadTrainerStorage();
-        }).catch(err => {
-            console.error("Error initializing Google API:", err);
-        });
-    });
-}
 
 /*** Utility Functions ***/
 function redirectToLoginIfNotLoggedIn() {
@@ -170,44 +152,49 @@ function redirectToLoginIfNotLoggedIn() {
 
 async function loadTrainerStorage() {
     try {
-        const response = await gapi.client.sheets.spreadsheets.values.get({
-            spreadsheetId: SPREADSHEET_ID,
-            range: RANGE,
-        });
-        const rows = response.result.values || [];
-        trainerStorage = rows.map(row => ({
-            name: row[0] || "",
-            email: row[1] || "",
-            department: row[2] || "",
-            position: row[3] || "",
-            password: row[4] || ""
+        const { data, error } = await supabase
+            .from("trainers")
+            .select("*")
+            .order("id", { ascending: true });
+        if (error) throw error;
+        trainerStorage = data.map(row => ({
+            id: row.id,
+            name: row.name || "",
+            email: row.email || "",
+            department: row.department || "",
+            position: row.position || "",
+            password: row.password || ""
         }));
         populateTable();
     } catch (err) {
-        console.error("Error loading Google Sheet:", err);
+        console.error("Error loading trainers from Supabase:", err);
         trainerStorage = [];
         populateTable();
     }
 }
 
-async function saveTrainerStorage() {
-    const values = trainerStorage.map(trainer => [
-        trainer.name,
-        trainer.email,
-        trainer.department,
-        trainer.position,
-        trainer.password
-    ]);
+async function saveTrainerStorage(trainer) {
     try {
-        await gapi.client.sheets.spreadsheets.values.update({
-            spreadsheetId: SPREADSHEET_ID,
-            range: RANGE,
-            valueInputOption: "RAW",
-            resource: { values },
-        });
-        console.log("Google Sheet updated successfully.");
+        const { error } = await supabase
+            .from("trainers")
+            .upsert(trainer, { onConflict: "id" });
+        if (error) throw error;
+        console.log("Trainer data saved to Supabase.");
     } catch (err) {
-        console.error("Error saving to Google Sheet:", err);
+        console.error("Error saving to Supabase:", err);
+    }
+}
+
+async function deleteTrainer(id) {
+    try {
+        const { error } = await supabase
+            .from("trainers")
+            .delete()
+            .eq("id", id);
+        if (error) throw error;
+        console.log("Trainer deleted from Supabase.");
+    } catch (err) {
+        console.error("Error deleting from Supabase:", err);
     }
 }
 
@@ -281,21 +268,24 @@ async function saveUser(index, row) {
         console.error("Not enough inputs in row for saving.");
         return;
     }
-    trainerStorage[index] = {
+    const trainer = {
+        id: trainerStorage[index].id,
         name: inputs[0].value,
         email: inputs[1].value,
         department: inputs[2].value,
         position: inputs[3].value,
         password: inputs[4].value
     };
-    await saveTrainerStorage();
-    populateTable();
+    trainerStorage[index] = trainer;
+    await saveTrainerStorage(trainer);
+    await loadTrainerStorage(); // Refresh data
 }
 
 async function removeUser(index) {
+    const id = trainerStorage[index].id;
     trainerStorage.splice(index, 1);
-    await saveTrainerStorage();
-    populateTable();
+    await deleteTrainer(id);
+    await loadTrainerStorage(); // Refresh data
 }
 
 async function addUser() {
@@ -309,22 +299,30 @@ async function addUser() {
         return;
     }
 
-    trainerStorage.push({
+    const trainer = {
         name: nameInput.value,
         email: emailInput.value,
         department: departmentInput.value,
         position: positionInput.value,
         password: "" // Password can be set via reset if needed
-    });
+    };
 
-    await saveTrainerStorage();
-    populateTable();
+    try {
+        const { error } = await supabase
+            .from("trainers")
+            .insert([trainer]);
+        if (error) throw error;
+        console.log("Trainer added to Supabase.");
+        await loadTrainerStorage(); // Refresh data
 
-    // Clear input fields
-    nameInput.value = "";
-    emailInput.value = "";
-    departmentInput.value = "Sales";
-    positionInput.value = "Manager";
+        // Clear input fields
+        nameInput.value = "";
+        emailInput.value = "";
+        departmentInput.value = "Sales";
+        positionInput.value = "Manager";
+    } catch (err) {
+        console.error("Error adding trainer to Supabase:", err);
+    }
 }
 
 /*** Excel Import ***/
@@ -343,27 +341,32 @@ async function handleExcelImport(event) {
         const sheet = workbook.Sheets[sheetName];
         const rows = XLSX.utils.sheet_to_json(sheet, { header: 1 });
 
-        rows.slice(1).forEach(row => {
-            const [name, email, department, position, password] = row;
-            trainerStorage.push({
-                name: name || "",
-                email: email || "",
-                department: department || "",
-                position: position || "",
-                password: password || ""
-            });
-        });
+        const trainers = rows.slice(1).map(row => ({
+            name: row[0] || "",
+            email: row[1] || "",
+            department: row[2] || "",
+            position: row[3] || "",
+            password: row[4] || ""
+        }));
 
-        await saveTrainerStorage();
-        populateTable();
+        try {
+            const { error } = await supabase
+                .from("trainers")
+                .insert(trainers);
+            if (error) throw error;
+            console.log("Trainers imported to Supabase.");
+            await loadTrainerStorage(); // Refresh data
+        } catch (err) {
+            console.error("Error importing trainers to Supabase:", err);
+        }
     };
     reader.readAsBinaryString(file);
 }
 
 /*** Initialization ***/
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", async function () {
     redirectToLoginIfNotLoggedIn();
-    initGoogleAPI();
+    await loadTrainerStorage();
     if (importExcelForm) {
         importExcelForm.addEventListener("submit", handleExcelImport);
     }
