@@ -1,17 +1,3 @@
-I understand that the computer (desktop) version of the CSS doesn't look good, but I need more details about what specific issues you're seeing to provide targeted fixes. For example, are there layout problems (e.g., elements overlapping, misaligned, or too large/small), color issues, spacing problems, or specific sections (like the header, tables, or forms) that look off? Since the previous request focused on making the CSS responsive for iOS and smartphone views, I'll assume you want to improve the desktop version while preserving the mobile optimizations.
-
-Below, I'll provide an updated CSS that refines the desktop version for a cleaner, more polished look, while keeping the mobile responsiveness intact. I'll make the following improvements for desktop:
-- Adjust spacing and padding for better readability and aesthetics.
-- Refine table layouts to prevent overcrowding and improve alignment.
-- Enhance header and navigation for a more professional appearance.
-- Optimize form and button styling for consistency.
-- Ensure containers (e.g., `.training-plan`, `.material-div-page`) have balanced widths and margins.
-- Fix potential layout issues like overflow or misalignment.
-
-I'll also maintain the mobile optimizations from the previous response and address common desktop issues like excessive padding, unbalanced widths, or cluttered layouts. If you have specific complaints (e.g., "the header is too tall" or "tables look cramped"), please share them for more precise adjustments.
-
-### Updated CSS
-```css
 /* Basic Reset */
 * {
     margin: 0;
@@ -1417,55 +1403,3 @@ footer {
         box-shadow: 0 0 5px rgba(0, 115, 230, 0.5);
     }
 }
-```
-
-### Key Improvements for Desktop
-1. **Header**:
-   - Changed to `display: flex` with `justify-content: space-between` for better alignment.
-   - Increased font size (`28px`) and padding for a more spacious look.
-   - Hid `.burger-menu` by default on desktop, assuming a horizontal nav is used (you may need to add a horizontal menu in HTML).
-
-2. **Tables**:
-   - Centered tables (e.g., `.user-table`, `.training-table`, `.agents_skills`) with `width: 90%` and `max-width: 1200px` for balanced spacing.
-   - Added `box-shadow` and `border-radius` for a modern, polished look.
-   - Increased padding (`15px`) and font sizes (`14px`) for better readability.
-
-3. **Containers**:
-   - Adjusted `.training-plan`, `.material-div-page`, `.form-container`, etc., to `width: 90%` and `max-width: 1200px` for consistent centering.
-   - Increased padding (`30px`) for a less cramped appearance.
-   - Added subtle `box-shadow` for depth.
-
-4. **Forms and Buttons**:
-   - Standardized button padding (`12px 24px`) and font sizes (`16px`) for consistency.
-   - Added `transform: scale(1.05)` on hover for interactive feedback.
-   - Ensured forms (e.g., `#add-material-form`, `.add-record-container form`) are centered with `max-width` for better layout.
-
-5. **Search Section**:
-   - Reduced `.search-details` width to `80%` and `max-width: 900px` for a more compact, centered look.
-   - Increased padding (`40px`) for better spacing.
-   - Limited `.search-box` to `max-width: 600px` to avoid stretching on wide screens.
-
-6. **Typography**:
-   - Imported 'Roboto' font for a cleaner, modern look.
-   - Adjusted font sizes for headers (`h1`, `h2`, `h3`) and body text for better hierarchy.
-   - Increased `line-height: 1.6` for improved readability.
-
-7. **General Layout**:
-   - Added `margin: 30px auto` to most containers for consistent spacing.
-   - Used `flex` and `grid` layouts (e.g., `.training-Details`) with balanced gaps (`20px`).
-   - Ensured `overflow: hidden` on rounded containers to prevent content clipping.
-
-### Mobile Responsiveness
-- Preserved the mobile optimizations from the previous response, with slight refinements:
-  - Adjusted `width` to `95%` or `100%` for full-screen usage.
-  - Reduced padding and font sizes (e.g., `12px` for tables, `10px` for smaller screens).
-  - Ensured touch-friendly tap targets (`min-width: 44px`, `min-height: 44px`).
-  - Maintained iOS-specific scrolling and focus styles.
-
-### Notes
-- **Specific Issues**: Since you didn't specify what looks bad, I've made general improvements for desktop (e.g., better spacing, modern typography, consistent container widths). Please provide details (e.g., "tables are too wide" or "header looks cluttered") for targeted fixes.
-- **Testing**: Test on a desktop browser (Chrome, Firefox, Safari) with a wide screen (e.g., 1440px or 1920px) to verify the layout. Use dev tools to simulate different resolutions.
-- **HTML Dependency**: Some styles (e.g., horizontal nav vs. burger menu) assume specific HTML. If you have a horizontal nav for desktop, ensure it's styled appropriately (I can add styles if you share the HTML).
-- **Images**: Ensure `background.png` is high-resolution for desktop displays. Consider adding a media query for a smaller image on mobile to improve load times.
-
-If you can describe the specific problems with the desktop version or share the HTML, I can provide a more tailored solution. Let me know!
